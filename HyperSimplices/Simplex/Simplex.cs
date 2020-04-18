@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+﻿using HyperSimplices.CurvedGeometry;
+using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -8,6 +9,18 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices
 {
+    public abstract class Simplex<T> : ChainComplexElement, INegatable
+    {
+        public List<T> Edges { get; set; }
+        public int Dim { get; set; }
+        public int DimAmbiantSpace { get; set; }
+        public abstract void Negate();
+        public T BasePoint { get; set; }
+        public T[] DirectionalVectors { get; set; }
+        public Diffeomorphism Chart { get; set; }
+        public abstract List<T> CreateMesh(int meshSteps);
+    }
+
     public class Simplex : Simplex<Vector<double>>
     {
         public Simplex(List<Vector<double>> edges)
@@ -29,6 +42,20 @@ namespace HyperSimplices
                 ret += t[ell] * DirectionalVectors[ell];
 
             return ret;
+        }
+        public override List<Vector<double>> CreateMesh(int meshSteps)
+        {
+            var mesh = new List<Vector<double>>();
+            var delta = 1.0 / meshSteps;
+            var meshPointsInCube = ArrayHelpers.CreateSimplexMesh(delta, Dim);
+
+            foreach (var meshPoint in meshPointsInCube)
+            {
+                if (meshPoint.Sum() <= 1.0)
+                    mesh.Add(Vector<double>.Build.DenseOfArray(meshPoint));
+            }
+
+            return mesh;
         }
 
         public override void Negate()

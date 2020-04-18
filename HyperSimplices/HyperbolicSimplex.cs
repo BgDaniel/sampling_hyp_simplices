@@ -9,18 +9,23 @@ namespace HyperSimplices
 {
     public class HyperbolicSimplex : Simplex
     {
-        public RiemannianSpace AmbiantSpace { get; set; }
+        public ChartOverSimplex Trivialization { get; private set; }
 
         public HyperbolicSimplex(List<Vector<double>> edges) : base(edges)
         {
-            AmbiantSpace = new HyperbolicSpace(DimAmbiantSpace);
+            Trivialization = new ChartOverSimplex(this);
         }
         
-        public double Volume()
+        public double CalculateVolume(int meshSteps)
         {
-            //var metricInChart =
+            var mesh = CreateMesh(meshSteps);
+            var volume = .0;
+            var dVol = Math.Pow(1.0 / meshSteps, Dim);
 
-            return .0;
+            foreach(var meshPoint in mesh)
+                volume += Trivialization.GramDeterminant(meshPoint) * dVol;
+
+            return volume;
         }
     }
 }

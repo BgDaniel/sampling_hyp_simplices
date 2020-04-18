@@ -61,18 +61,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayHelpers.cs" />
+    <Compile Include="Utils\ArrayHelpers.cs" />
     <Compile Include="ChainComplexElement.cs" />
+    <Compile Include="CurvedGeometry\DifferentialGeometry.cs" />
     <Compile Include="HyperbolicSimplex.cs" />
-    <Compile Include="HyperbolicSpace.cs" />
-    <Compile Include="ISimplex.cs" />
-    <Compile Include="Simplex.cs" />
-    <Compile Include="StandardSimplex.cs" />
+    <Compile Include="CurvedGeometry\BeltramiKlein.cs" />
+    <Compile Include="Simplex\Simplex.cs" />
+    <Compile Include="Simplex\StandardSimplex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StandardSimplexFactory.cs" />
+    <Compile Include="Simplex\StandardSimplexFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

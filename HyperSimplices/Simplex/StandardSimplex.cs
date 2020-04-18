@@ -42,13 +42,7 @@ namespace HyperSimplices
         public void CreateMesh(int meshSteps)
         {
             Delta = 1.0 / meshSteps;
-            var meshPointsInCube = ArrayHelpers.CreateSimplexMesh(Delta, Dim);
 
-            foreach (var meshPoint in meshPointsInCube)
-            {
-                if (meshPoint.Sum() <= 1.0)
-                    Mesh.Add(meshPoint);
-            }
         }
 
         public StandardSimplex(SimplexKey simplexKey) : base(GetStandardEdges(simplexKey.Dim))
