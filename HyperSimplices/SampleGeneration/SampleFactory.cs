@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperSimplices.SampleFactory
+namespace HyperSimplices.SampleGeneration
 {
     public class SampleFactory
     {

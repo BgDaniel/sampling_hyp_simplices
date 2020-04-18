@@ -1,5 +1,5 @@
 ﻿using CommandLine;
-using HyperSimplices;
+using HyperSimplices.SampleGeneration;
 using HypSimplexSampleFactory.CommandLineParser;
 using System;
 
@@ -9,13 +9,15 @@ namespace HypSimplexSampleFactory
     {
         static void Main(string[] args)
         {
-            Execute(args);
+            //Execute(args);
             Execute(ExampleConfigs.ExampleConfigurations.Hyper3_1000_5);
         }
 
         private static void Execute(Options options)
         {
             Console.WriteLine(MessageAtStart(options));
+            var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.MaxNorm);
+            var randomSamples = sampleFactory.RandomSamples();
         }
 
         private static void Execute(string[] args)
@@ -32,10 +34,10 @@ namespace HypSimplexSampleFactory
 
         private static String MessageAtStart(Options options)
         {
-            return $"Generation of random hyperbolic simplices started ... \n Current Arguments: \n" +
-                           $"-n : {options.NumberSamples} \n" +
-                           $"-d : {options.Dimension} \n" +
-                           $"-m : {options.MaxNorm} \n";
+            return $"Generation of random hyperbolic simplices started ... \nCurrent arguments are configured as follows: \n" +
+                           $"-n = {options.NumberSamples} \n" +
+                           $"-d = {options.Dimension} \n" +
+                           $"-m = {options.MaxNorm} \n";
         }
     }
 }

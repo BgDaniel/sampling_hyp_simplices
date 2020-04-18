@@ -61,7 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SampleFactory\SampleFactory.cs" />
+    <Compile Include="SampleGeneration\SampleFactory.cs" />
     <Compile Include="SimplicialGeometry\Simplex\EuclideanSimplex.cs" />
     <Compile Include="SimplicialGeometry\SimplexComplex\HyperbolicSimplexComplex.cs" />
     <Compile Include="SimplicialGeometry\SimplexComplex\GenericSimplexComplex.cs" />
