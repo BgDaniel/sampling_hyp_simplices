@@ -20,7 +20,7 @@ namespace HyperSimplices.SimplicialGeometry
         }
     }
 
-    public sealed class StandardSimplex : EuclideanSimplex
+    public sealed class StandardSimplex : HyberbolicSimplex
     {
         private static Tuple<int, Vector<double>>[] GetStandardEdges(int dim)
         {

@@ -9,11 +9,11 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
 {
     public class SimplexPair
     {
-        public EuclideanSimplex CommonBase { get; private set; }
-        public EuclideanSimplex Simplex1 { get; private set; }
-        public EuclideanSimplex Simplex2 { get; private set; }
+        public HyberbolicSimplex CommonBase { get; private set; }
+        public HyberbolicSimplex Simplex1 { get; private set; }
+        public HyberbolicSimplex Simplex2 { get; private set; }
 
-        public SimplexPair(EuclideanSimplex commonBase, EuclideanSimplex simplex1, EuclideanSimplex simplex2)
+        public SimplexPair(HyberbolicSimplex commonBase, HyberbolicSimplex simplex1, HyberbolicSimplex simplex2)
         {
             CommonBase = commonBase;
             Simplex1 = simplex1;
@@ -23,15 +23,27 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
 
     public class SimplexComplex
     {
-        public EuclideanSimplex Simplex0 { get; private set; }
-        public Dictionary<int, List<EuclideanSimplex>> Chain { get; private set; }
+        public HyberbolicSimplex Simplex0 { get; private set; }
+        public Dictionary<int, List<HyberbolicSimplex>> Chain { get; private set; }
         public Dictionary<int, List<SimplexPair>> SimplexPairs { get; private set; }
 
-        public SimplexComplex(EuclideanSimplex simplex0)
+        public SimplexComplex(HyberbolicSimplex simplex0)
         {
             Simplex0 = simplex0;
-            Chain = new Dictionary<int, List<EuclideanSimplex>> { [Simplex0.Dim] = new List<EuclideanSimplex> { Simplex0 } };
+            Chain = new Dictionary<int, List<HyberbolicSimplex>> { [Simplex0.Dim] = new List<HyberbolicSimplex> { Simplex0 } };
             SimplexPairs = new Dictionary<int, List<SimplexPair>>();            
+        }
+
+        public void Integrate(int meshSteps, List<int> dimensions = null)
+        {
+            foreach(var item in Chain)
+            {
+                if (dimensions != null && !dimensions.Contains(item.Key))
+                    continue;
+
+                foreach(var simplex in item.Value)
+                    simplex.Integrate(meshSteps);                
+            }
         }
 
         public void Propagate()
@@ -51,7 +63,7 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
                         }
                     }
                     else
-                        Chain[dim - 1] = new List<EuclideanSimplex>(simplex.Faces);                    
+                        Chain[dim - 1] = new List<HyberbolicSimplex>(simplex.Faces);                    
                 }                    
             }
 

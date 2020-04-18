@@ -26,19 +26,10 @@ namespace HyperSimplices
             return ret;
         }
 
-        public static List<double[]> CreateSimplexMesh(double delta, int dim, double scale = 1.0)
+        public static List<Vector<double>> CreateSimplexMesh(int meshSteps, int dim, double scale = 1.0)
         {
-            var deltas = new List<double>();
-
-            double currentValue = .0;
-            var counter = 0;
-            while(currentValue <= scale)
-            {
-                deltas.Add(counter * delta);                
-                counter++;
-                currentValue = counter * delta;
-            }
-
+            var delta = 1.0 / meshSteps;
+            var deltas = Enumerable.Range(0, meshSteps + 1).Select(i => i * delta).ToArray();         
             var meshPoints = new List<double[]>() { new double[dim] };
             List<double[]> meshPointsNew = null;
 
@@ -47,12 +38,12 @@ namespace HyperSimplices
                 meshPointsNew = new List<double[]>();
 
                 foreach (var meshPoint in meshPoints)
-                    meshPointsNew.AddRange(FillNextEntry(meshPoint, iDim, deltas.ToArray()));
+                    meshPointsNew.AddRange(FillNextEntry(meshPoint, iDim, deltas));
 
                 meshPoints = meshPointsNew.CopyDoubleArrayList(); 
             }
 
-            return meshPoints;
+            return meshPoints.Select(meshPt => Vector<double>.Build.DenseOfArray(meshPt)).ToList();
         }   
         
         public static List<Vector<double>> RandomVectors(int nbSamples, int dim, double maxNorm = 1.0)

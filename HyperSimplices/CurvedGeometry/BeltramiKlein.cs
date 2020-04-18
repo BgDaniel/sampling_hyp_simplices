@@ -31,7 +31,7 @@ namespace HyperSimplices
 
     public class ChartOverSimplex : LocalTrivialization
     {   
-        public ChartOverSimplex(EuclideanSimplex simplex) : base(simplex.Chart, 
+        public ChartOverSimplex(HyberbolicSimplex simplex) : base(simplex.Chart, 
             x => Matrix<double>.Build.DenseOfColumnVectors(simplex.DirectionalVectors), 
             new BeltramiKlein(simplex.Dim))
         {

@@ -13,28 +13,34 @@ namespace HyperSimplices.SampleGeneration
     {
         public int NbSamples { get; private set; }
         public int Dim { get; private set; }
-        public double MaxNorm { get; private set; }        
+        public double MaxNorm { get; private set; } 
+        public bool Integrate { get; private set; }
+        public int MeshSteps { get; private set; }
 
-        public SampleFactory(int nbSamples, int dim, double maxNorm = 1.0)
+        public SampleFactory(int nbSamples, int dim, bool integrate = false, int meshSteps = 1000, double maxNorm = 1.0)
         {
             NbSamples = nbSamples;
             Dim = dim;
             MaxNorm = maxNorm;
+            Integrate = integrate;
+            MeshSteps = meshSteps;
         }
 
-        public (List<HyperbolicSimplex>, List<SimplexComplex>) RandomSamples()
+        public (List<HyberbolicSimplex>, List<SimplexComplex>) RandomSamples()
         {
-            var randomSimplices = HyperbolicSimplex.RandomSamples(NbSamples, Dim, MaxNorm);
+            var randomSimplices = HyberbolicSimplex.RandomSamples(NbSamples, Dim, MaxNorm);
             var hyperRandomComplexes = new List<SimplexComplex>();
 
             foreach (var randomSimplex in randomSimplices)                
             {
                 var simplexComplex = new SimplexComplex(randomSimplex);
                 simplexComplex.Propagate();
+                
+                if(Integrate)
+                    simplexComplex.Integrate(MeshSteps);
             }
                 
-
-            return (randomSimplices, null);
+            return (randomSimplices, hyperRandomComplexes);
         }
     }
 }

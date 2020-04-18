@@ -10,14 +10,14 @@ namespace HypSimplexSampleFactory
         static void Main(string[] args)
         {
             //Execute(args);
-            Execute(ExampleConfigs.ExampleConfigurations.Hyper3_1000_5);
+            Execute(ExampleConfigs.ExampleConfigurations.Hyper2_1000_500_5);
         }
 
         private static void Execute(Options options)
         {
             Console.WriteLine(MessageAtStart(options));
-            var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.MaxNorm);
-            var randomSamples = sampleFactory.RandomSamples();
+            var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.Integrate, options.MeshSteps, options.MaxNorm);
+            (var randomSimplices, var hyperRandomComplexes) = sampleFactory.RandomSamples();            
         }
 
         private static void Execute(string[] args)
@@ -37,6 +37,8 @@ namespace HypSimplexSampleFactory
             return $"Generation of random hyperbolic simplices started ... \nCurrent arguments are configured as follows: \n" +
                            $"-n = {options.NumberSamples} \n" +
                            $"-d = {options.Dimension} \n" +
+                           $"-b = {options.Integrate} \n" +
+                           $"-i = {options.MeshSteps} \n" +
                            $"-m = {options.MaxNorm} \n";
         }
     }
