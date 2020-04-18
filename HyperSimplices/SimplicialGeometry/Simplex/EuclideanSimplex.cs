@@ -8,16 +8,40 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices.SimplicialGeometry.Simplex
 {
-    public class EuclideanSimplex : GenericSimplex<Vector<double>>, IEquatable<EuclideanSimplex>, ICloneable
+    public class EuclideanSimplex : GenericSimplex<Vector<double>>, IEquatable<EuclideanSimplex>
     {
         public Vector<double>[] DirectionalVectors { get; set; }
         public int DimAmbiantSpace { get; set; }
 
-        public EuclideanSimplex(Dictionary<int, Vector<double>> edges) : base(edges)
+        public List<int> Indices => Edges.Select(edge => edge.Item1).ToList();
+
+        public EuclideanSimplex(Tuple<int, Vector<double>>[] edges) : base(edges)
         {
-            DirectionalVectors = Enumerable.Range(2, Dim).Select(i => Edges[i] - BasePoint).ToArray();
+            DirectionalVectors = new Vector<double>[Dim];
+            var ell = 0;
+
+            foreach(var item in edges.Skip(1))
+            {
+                DirectionalVectors[ell] = item.Item2 - BasePoint;
+                ell++;
+            }                            
+
             DimAmbiantSpace = BasePoint.Count();
             Chart = x => Parametrization(x.AsArray());
+        }
+
+        public Tuple<int, Vector<double>>[] ComplementaryEdges(Tuple<int, Vector<double>>[] edges)
+        {
+            var ret = new List<Tuple<int, Vector<double>>>();
+            var currentIndices = edges.Select(edge => edge.Item1).ToList();
+
+            for (int ell = 0; ell < Edges.Length; ell++)
+            {
+                if (!currentIndices.Contains(Edges[ell].Item1))
+                    ret.Add(new Tuple<int, Vector<double>>( Edges[ell].Item1, Edges[ell].Item2.Clone() ));
+            }
+
+            return ret.ToArray();
         }
 
         protected Vector<double> Parametrization(double[] t)
@@ -48,15 +72,15 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 
         public EuclideanSimplex RemoveEdge(int index)
         {
-            var newEdges = new Dictionary<int, Vector<double>>();
-
-            foreach (var edge in Edges)
+            var newEdges = new List<Tuple<int, Vector<double>>>();
+            
+            for(int ell = 0; ell < Edges.Length; ell++)
             {
-                if (edge.Key != index)
-                    newEdges[edge.Key] = (Vector<double>)edge.Value.Clone();
+                if (ell != index)
+                    newEdges.Add(new Tuple<int, Vector<double>>(Edges[ell].Item1, (Vector<double>)Edges[ell].Item2.Clone()));
             }
 
-            return new EuclideanSimplex(newEdges);
+            return new EuclideanSimplex(newEdges.ToArray());
         }
 
         public List<EuclideanSimplex> Faces
@@ -64,16 +88,17 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             get
             {
                 var ret = new List<EuclideanSimplex>();
-                var counter = 1;
+                var ell = 0;
 
                 foreach (var edge in Edges)
                 {
-                    var face = RemoveEdge(counter);
+                    var face = RemoveEdge(ell);
 
-                    if (counter % 2 != 0)
-                        face.Negate();
+                    if (ell % 2 != 0)
+                        face = face.Negate();
 
                     ret.Add(face);
+                    ell++;
                 }
 
                 return ret;
@@ -98,29 +123,35 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return adjacentFaces;
         }
 
-        public override void Negate()
+        public EuclideanSimplex Negate()
         {
             if (Dim == 0)
-                return;
+                return (EuclideanSimplex)Clone();
             else
             {
-                var edge0 = Edges[0].Clone();
-                Edges[0] = Edges[1].Clone();
-                Edges[1] = edge0;
-                BasePoint = Edges.Values.First();
-                DirectionalVectors = Enumerable.Range(1, Dim + 1).Select(i => Edges[i] + BasePoint).ToArray();
+                var edgesCloned = new Tuple<int, Vector<double>>[Dim + 1];
+
+                for (int ell = 0; ell < Dim + 1; ell++)
+                    edgesCloned[ell] = new Tuple<int, Vector<double>>( Edges[ell].Item1, Edges[ell].Item2.Clone() );
+
+                var firstIndex = edgesCloned[0].Item1;
+                var firstEdge = edgesCloned[0].Item2.Clone();
+                edgesCloned[0] = edgesCloned[1];
+                edgesCloned[1] = new Tuple<int, Vector<double>>( firstIndex, firstEdge );
+            
+                return new EuclideanSimplex(edgesCloned);
             }
         }
 
         bool IEquatable<EuclideanSimplex>.Equals(EuclideanSimplex other)
         {
-            var edgeIndices = new HashSet<int>(other.Edges.Keys);
-            return edgeIndices.SetEquals(new HashSet<int>(Edges.Keys));
+            var edgeIndices = new HashSet<int>(other.Indices);
+            return edgeIndices.SetEquals(new HashSet<int>(Indices));
         }
 
         public override int GetHashCode()
         {
-            return Edges.Keys.GetHashCode();
+            return Indices.GetHashCode();
         }
 
         public static EuclideanSimplex RandomSample(int dim, double maxNorm = 1.0)
@@ -135,10 +166,10 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 
             for (int i = 0; i < nbSamples; i++)
             {
-                var edges = new Dictionary<int, Vector<double>>();
+                var edges = new Tuple<int, Vector<double>>[dim + 1];
 
                 for (int j = 0; j <= dim; j++)
-                    edges[1 + j] = rndVectors[i * dim + j];
+                    edges[j] = new Tuple<int, Vector<double>>(j + 1, rndVectors[i * dim + j]);
                 
                 ret.Add(new EuclideanSimplex(edges));
             }
@@ -146,14 +177,14 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return ret; 
         }
 
-        object ICloneable.Clone()
+        public EuclideanSimplex Clone()
         {
-            var edgesCloned = new Dictionary<int, Vector<double>>();
-
-            foreach (var edge in Edges)
-                edgesCloned[edge.Key] = (Vector<double>)edge.Value.Clone();
-
-            return new GenericSimplex<Vector<double>>(edgesCloned);
+            var edgesCloned = new Tuple<int, Vector<double>>[Dim + 1];
+            
+            for(int ell = 0; ell < Dim + 1; ell++)
+                edgesCloned[ell] = new Tuple<int, Vector<double>>( Edges[ell].Item1, Edges[ell].Item2.Clone() );
+            
+            return new EuclideanSimplex(edgesCloned);
         }
     }
 }

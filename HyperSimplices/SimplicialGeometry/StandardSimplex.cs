@@ -22,15 +22,15 @@ namespace HyperSimplices.SimplicialGeometry
 
     public sealed class StandardSimplex : EuclideanSimplex
     {
-        private static Dictionary<int, Vector<double>> GetStandardEdges(int dim)
+        private static Tuple<int, Vector<double>>[] GetStandardEdges(int dim)
         {
-            var ret = new Dictionary<int, Vector<double>>();
+            var ret = new Tuple<int, Vector<double>>[dim + 1];
 
-            for(int i = 1; i <= dim; i++)
+            for(int ell = 0; ell <= dim + 1; ell++)
             {
                 var arr = new double[dim];
-                arr[i - 1] = 1.0;
-                ret[i] = Vector<double>.Build.DenseOfArray(arr);
+                arr[ell] = 1.0;
+                ret[ell] = new Tuple<int, Vector<double>>( ell + 1, Vector<double>.Build.DenseOfArray(arr) );
             }
 
             return ret;

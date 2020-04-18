@@ -11,14 +11,13 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 {
     public class GenericSimplex<T> where T : ICloneable
     {
-        public Dictionary<int, T> Edges { get; private set; }
-        public int Dim => Edges.Count - 1;
-        public virtual void Negate() { }
+        public Tuple<int, T>[] Edges { get; private set; }
+        public int Dim => Edges.Length - 1;
         public T BasePoint
         {
             get
             {
-                return Edges.Values.First();
+                return Edges[0].Item2;
             }
             set
             {
@@ -26,21 +25,9 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
         }        
 
-        public GenericSimplex(Dictionary<int, T> edges)
+        public GenericSimplex(Tuple<int, T>[] edges)
         {
             Edges = edges;
         }
-
-        public GenericSimplex<T> Clone()
-        {
-            var edgesCloned = new Dictionary<int, T>();
-
-            foreach (var edge in Edges)
-                edgesCloned[edge.Key] = (T)edge.Value.Clone();
-
-            return new GenericSimplex<T>(edgesCloned);
-        }
-    }
-
-    
+    }    
 }

@@ -12,7 +12,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
     {
         public ChartOverSimplex Trivialization { get; private set; }
 
-        public HyperbolicSimplex(Dictionary<int, Vector<double>> edges) : base(edges)
+        public HyperbolicSimplex(Tuple<int, Vector<double>>[] edges) : base(edges)
         {
             Trivialization = new ChartOverSimplex(this);
         }

@@ -34,28 +34,6 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
             SimplexPairs = new Dictionary<int, List<SimplexPair>>();            
         }
 
-        public List<EuclideanSimplex> CommonBaseSimplices(EuclideanSimplex baseSimplex)
-        {
-            var commonBaseSimplices = new List<EuclideanSimplex>();
-            var baseIndices = Simplex0.Edges.Keys;
-            List<int> indicesExtended;
-
-            foreach (var index in baseIndices)
-            {
-                indicesExtended = new List<int>(baseIndices);                
-
-                if (!baseSimplex.Edges.Keys.Contains(index))
-                {
-                    indicesExtended.Add(index);
-                    var edgesExtended = Simplex0.Edges.Where(edge => indicesExtended.Contains(edge.Key))
-                        .ToDictionary(edge => edge.Key, edge => edge.Value);
-                    commonBaseSimplices.Add(new EuclideanSimplex(edgesExtended));
-                }                    
-            }
-
-            return commonBaseSimplices;
-        }
-
         public void Propagate()
         {
             for(var dim = Simplex0.Dim; dim > 0; dim--)
@@ -65,7 +43,13 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
                 foreach(var simplex in simplices)
                 {
                     if (Chain.ContainsKey(dim - 1))
-                        Chain[dim - 1].AddRange(simplex.Faces);
+                    {
+                        foreach(var newFace in simplex.Faces)
+                        {
+                            if (!Chain[dim - 1].Contains(newFace))
+                                Chain[dim - 1].Add(newFace);
+                        }
+                    }
                     else
                         Chain[dim - 1] = new List<EuclideanSimplex>(simplex.Faces);                    
                 }                    
@@ -76,13 +60,11 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
                 if (Simplex0.Dim - equalDimSimplices.Key < 2)
                     continue;
 
-                SimplexPairs[equalDimSimplices.Key] = new List<SimplexPair>();
+                SimplexPairs[equalDimSimplices.Key + 1] = new List<SimplexPair>();
 
                 foreach (var simplex in equalDimSimplices.Value)
                 {
-                    var complementaryIndices = Simplex0.Edges.Keys.Except(simplex.Edges.Keys).ToArray();
-                    var baseSimplex = simplex.Clone();
-                    var baseEdges = simplex.Clone().Edges;
+                    var complementaryIndices = Simplex0.Indices.Except(simplex.Indices).ToArray();
 
                     for (int i = 0; i < complementaryIndices.Length; i++)
                     {
