@@ -7,10 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperSimplices.SimplicialGeometry
+namespace HyperSimplices.SimplicialGeometry.Simplex
 {
-
-
     public class GenericSimplex<T> where T : ICloneable
     {
         public Dictionary<int, T> Edges { get; private set; }
@@ -32,7 +30,7 @@ namespace HyperSimplices.SimplicialGeometry
             }
             
             return new GenericSimplex<T>(newEdges);
-        }
+        }        
 
         public List<GenericSimplex<T>> Faces
         {

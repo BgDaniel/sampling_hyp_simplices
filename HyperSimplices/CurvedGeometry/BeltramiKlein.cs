@@ -1,5 +1,6 @@
 ﻿using HyperSimplices.CurvedGeometry;
 using HyperSimplices.SimplicialGeometry;
+using HyperSimplices.SimplicialGeometry.Simplex;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperSimplices.SimplicialGeometry
+namespace HyperSimplices.SimplicialGeometry.Simplex
 {
-    public class EuclideanSimplex : GenericSimplex<Vector<double>>
+    public class EuclideanSimplex : GenericSimplex<Vector<double>>, IEquatable<EuclideanSimplex>
     {
         public EuclideanSimplex(Dictionary<int, Vector<double>> edges) : base(edges)
         {
@@ -17,11 +17,6 @@ namespace HyperSimplices.SimplicialGeometry
             DirectionalVectors = Enumerable.Range(1, Dim + 1).Select(i => Edges[i] + BasePoint).ToArray();
 
             Chart = x => Parametrization(x.AsArray());
-        }
-
-        public double Angle(EuclideanSimplex simplex)
-        {
-
         }
 
         protected Vector<double> Parametrization(double[] t)
@@ -60,6 +55,40 @@ namespace HyperSimplices.SimplicialGeometry
                 BasePoint = Edges.Values.First();
                 DirectionalVectors = Enumerable.Range(1, Dim + 1).Select(i => Edges[i] + BasePoint).ToArray();
             }
+        }
+
+        bool IEquatable<EuclideanSimplex>.Equals(EuclideanSimplex other)
+        {
+            var edgeIndices = new HashSet<int>(other.Edges.Keys);
+            return edgeIndices.SetEquals(new HashSet<int>(Edges.Keys));
+        }
+
+        public override int GetHashCode()
+        {
+            return Edges.Keys.GetHashCode();
+        }
+
+        public static EuclideanSimplex RandomSample(int dim, double maxNorm = 1.0)
+        {
+            return RandomSamples(1, dim, maxNorm)[0];
+        }
+
+        public static List<EuclideanSimplex> RandomSamples(int nbSamples, int dim, double maxNorm = 1.0) 
+        {
+            var ret = new List<EuclideanSimplex>();
+            var rndVectors = ArrayHelpers.RandomVectors(nbSamples * dim, dim, maxNorm);
+
+            for (int i = 0; i < nbSamples; i++)
+            {
+                var edges = new Dictionary<int, Vector<double>>();
+
+                for (int j = 0; j < dim; j++)
+                    edges[1 + j] = rndVectors[i * dim + j];
+                
+                ret.Add(new EuclideanSimplex(edges));
+            }
+                
+            return ret; 
         }
     }
 }

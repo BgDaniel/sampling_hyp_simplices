@@ -1,4 +1,4 @@
-﻿using HyperSimplices.SimplicialGeometry;
+﻿using HyperSimplices.SimplicialGeometry.Simplex;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperSimplices
+namespace HyperSimplices.SimplicialGeometry.Simplex
 {
     public class HyperbolicSimplex : EuclideanSimplex
     {
@@ -27,6 +27,12 @@ namespace HyperSimplices
                 volume += Trivialization.GramDeterminant(meshPoint) * dVol;
 
             return volume;
+        }
+
+        public new List<HyperbolicSimplex> RandomSamples(int nbSamples, int dim, double maxNorm = 1.0)
+        {
+            return EuclideanSimplex.RandomSamples(nbSamples, dim, Math.Tanh(maxNorm))
+                .Select(euclideanSimplex => new HyperbolicSimplex(euclideanSimplex.Edges)).ToList();
         }
     }
 }

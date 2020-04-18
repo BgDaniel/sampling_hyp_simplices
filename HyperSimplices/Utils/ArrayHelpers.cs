@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MathNet.Numerics.Distributions;
+using MathNet.Numerics.LinearAlgebra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,7 +53,31 @@ namespace HyperSimplices
             }
 
             return meshPoints;
-        }        
+        }   
+        
+        public static List<Vector<double>> RandomVectors(int nbSamples, int dim, double maxNorm = 1.0)
+        {
+            var ret = new List<Vector<double>>();
+            var counter = 0;
+            var continuousUniform = new ContinuousUniform(- maxNorm, + maxNorm);
+
+            while(counter <= nbSamples)
+            {
+                var meetsCondition = false;
+                Vector<double> rndVector = null;
+
+                while (!meetsCondition)
+                {
+                    rndVector = Vector<double>.Build.Random(dim, continuousUniform);
+                    meetsCondition = rndVector.L2Norm() < maxNorm;
+                }
+
+                ret.Add(rndVector);
+                counter++;
+            }
+
+            return ret;
+        }
     }
 
     public static class ListExtension

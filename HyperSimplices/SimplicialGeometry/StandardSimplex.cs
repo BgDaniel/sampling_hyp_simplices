@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+﻿using HyperSimplices.SimplicialGeometry.Simplex;
+using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,15 +22,18 @@ namespace HyperSimplices.SimplicialGeometry
 
     public sealed class StandardSimplex : EuclideanSimplex
     {
-        private static List<Vector<double>> GetStandardEdges(int dim)
+        private static Dictionary<int, Vector<double>> GetStandardEdges(int dim)
         {
-            return Enumerable.Range(0, dim).Select(i =>
+            var ret = new Dictionary<int, Vector<double>>();
+
+            for(int i = 1; i <= dim; i++)
             {
-                var array = new double[dim];
-                array[i] = 1.0;
-                
-                return Vector<double>.Build.Dense(array);
-            }).ToList();
+                var arr = new double[dim];
+                arr[i - 1] = 1.0;
+                ret[i] = Vector<double>.Build.DenseOfArray(arr);
+            }
+
+            return ret;
         }
 
         public double Delta { get; private set; }

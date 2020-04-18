@@ -7,8 +7,7 @@ namespace HypSimplexSampleFactory
     {
         static void Main(string[] args)
         {
-            var standardSimplex = StandardSimplexFactory.Instance.GetStandardSimplex(3, 1000);
-            standardSimplex = StandardSimplexFactory.Instance.GetStandardSimplex(3, 1000);
+            var euclidean
         }
     }
 }
