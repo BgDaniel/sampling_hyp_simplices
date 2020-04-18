@@ -26,15 +26,6 @@ namespace HyperSimplices
             })
         {
             Curvature = curvature;
-        }
-    }
-
-    public class ChartOverSimplex : LocalTrivialization
-    {   
-        public ChartOverSimplex(HyberbolicSimplex simplex) : base(simplex.Chart, 
-            x => Matrix<double>.Build.DenseOfColumnVectors(simplex.DirectionalVectors), 
-            new BeltramiKlein(simplex.Dim))
-        {
-        }
+        }    
     }
 }

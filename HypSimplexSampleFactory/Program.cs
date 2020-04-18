@@ -10,7 +10,7 @@ namespace HypSimplexSampleFactory
         static void Main(string[] args)
         {
             //Execute(args);
-            Execute(ExampleConfigs.ExampleConfigurations.Hyper2_1000_500_5);
+            Execute(ExampleConfigs.ExampleConfigurations.Hyper2_1000_500_2);
         }
 
         private static void Execute(Options options)

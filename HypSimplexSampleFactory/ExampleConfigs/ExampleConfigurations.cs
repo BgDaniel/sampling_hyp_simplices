@@ -7,13 +7,13 @@ namespace HypSimplexSampleFactory.ExampleConfigs
 {
     static class ExampleConfigurations
     {
-        public static Options Hyper2_1000_500_5 = new Options
+        public static Options Hyper2_1000_500_2 = new Options
         {
             NumberSamples = 1000,
             Dimension = 2,
             Integrate = true,
             MeshSteps = 500,
-            MaxNorm = 5.0
+            MaxNorm = 2.0
         };
 
         public static Options Hyper3_1000_5 = new Options

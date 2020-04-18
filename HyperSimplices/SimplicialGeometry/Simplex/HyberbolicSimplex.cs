@@ -11,7 +11,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 {
     public class HyberbolicSimplex : GenericSimplex<Vector<double>>, IEquatable<HyberbolicSimplex>
     {
-        public ChartOverSimplex Trivialization { get; private set; }
+        public LocalTrivialization Trivialization { get; private set; }
         public Vector<double>[] DirectionalVectors { get; set; }
         public int DimAmbiantSpace { get; set; }        
         public List<int> Indices => Edges.Select(edge => edge.Item1).ToList();
@@ -19,23 +19,32 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 
         public HyberbolicSimplex(Tuple<int, Vector<double>>[] edges) : base(edges)
         {
-            DirectionalVectors = new Vector<double>[Dim];
-            var ell = 0;
+            var directionalVectors = new List<Vector<double>>();
 
             foreach(var item in edges.Skip(1))
-            {
-                DirectionalVectors[ell] = item.Item2 - BasePoint;
-                ell++;
-            }                            
+                directionalVectors.Add(item.Item2 - BasePoint);
+
+            DirectionalVectors = directionalVectors.ToArray();
 
             DimAmbiantSpace = BasePoint.Count();
-            Chart = x => Parametrization(x.AsArray());
 
-            Trivialization = new ChartOverSimplex(this);
+            Parametrization chart = x => {
+                var dir = Matrix<double>.Build.DenseOfColumnVectors(DirectionalVectors);
+                return dir * x;
+            };
+
+            PushForward pushForward = x => {
+                return Matrix<double>.Build.DenseOfColumnVectors(DirectionalVectors);
+            };
+
+            Trivialization = new LocalTrivialization(chart, pushForward, new BeltramiKlein(DimAmbiantSpace));
         }
 
         public void Integrate(int meshSteps)
         {
+            if (Dim == 0)
+                return;
+
             var mesh = MeshFactory.Instance.GetMesh(Dim, meshSteps);
             Volume = .0;
             var dVol = Math.Pow(1.0 / meshSteps, Dim);
@@ -57,18 +66,6 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 
             return ret;
         }
-
-        protected Vector<double> Parametrization(double[] t)
-        {
-            var ret = Vector<double>.Build.Dense(DimAmbiantSpace);
-
-            for (int ell = 0; ell < Dim; ell++)
-                ret += t[ell] * DirectionalVectors[ell];
-
-            return ret;
-        }
-
-        public Parametrization Chart { get; set; }
 
         public HyberbolicSimplex RemoveEdge(int index)
         {
@@ -170,10 +167,11 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return RandomSamples(1, dim, maxNorm)[0];
         }
 
-        public static List<HyberbolicSimplex> RandomSamples(int nbSamples, int dim, double maxNorm = 1.0) 
+        public static List<HyberbolicSimplex> RandomSamples(int nbSamples, int dim, double maxNorm = double.NaN) 
         {
             var ret = new List<HyberbolicSimplex>();
-            var rndVectors = ArrayHelpers.RandomVectors(nbSamples * (dim + 1), dim, maxNorm);
+            var hyperbolicNorm = Math.Tanh(maxNorm);
+            var rndVectors = ArrayHelpers.RandomVectors(nbSamples * (dim + 1), dim, hyperbolicNorm);
 
             for (int i = 0; i < nbSamples; i++)
             {

@@ -43,7 +43,15 @@ namespace HyperSimplices
                 meshPoints = meshPointsNew.CopyDoubleArrayList(); 
             }
 
-            return meshPoints.Select(meshPt => Vector<double>.Build.DenseOfArray(meshPt)).ToList();
+            var meshPointsFinal = new List<double[]>();
+
+            foreach(var meshPoint in meshPoints)
+            {
+                if (meshPoint.Sum() <= 1.0)
+                    meshPointsFinal.Add(meshPoint);
+            }
+
+            return meshPointsFinal.Select(meshPt => Vector<double>.Build.DenseOfArray(meshPt)).ToList();
         }   
         
         public static List<Vector<double>> RandomVectors(int nbSamples, int dim, double maxNorm = 1.0)

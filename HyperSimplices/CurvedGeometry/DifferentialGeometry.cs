@@ -22,11 +22,14 @@ namespace HyperSimplices.CurvedGeometry
             Metric = metric;
         }
 
-        public MetricTensor PullBack(Parametrization f, PushForward df)
+        public MetricTensor PullBack(Parametrization chart, PushForward pushForward)
         {
             return x =>
             {
-                return df(x).Transpose() * Metric(f(x)) * df(x);
+                var _pushForward = pushForward(x);
+                var _pushForwardT = pushForward(x).Transpose();
+
+                return _pushForwardT * Metric(chart(x)) * _pushForward;
             };
         }
 
@@ -47,15 +50,20 @@ namespace HyperSimplices.CurvedGeometry
 
     public class LocalTrivialization : RiemannianSpace
     {
-        public LocalTrivialization(Parametrization diffeo, PushForward ddiffeo, RiemannianSpace chartDomain) :
-            base(chartDomain.Dim, null)
+        public MetricTensor LocalMetric { get; set; }
+
+        public LocalTrivialization(Parametrization chart, PushForward pushForward, RiemannianSpace chartDomain) :
+            base(chartDomain.Dim, chartDomain.Metric)
         {
-            Metric = PullBack(diffeo, ddiffeo);
+            LocalMetric = PullBack(chart, pushForward);
         }
 
         public double GramDeterminant(Vector<double> x)
         {
-            return Math.Sqrt(Metric(x).Determinant());
+            var metricTensor = LocalMetric(x);
+            var determinant = metricTensor.Determinant();
+
+            return Math.Sqrt(determinant);
         }
     }
 }

@@ -41,6 +41,9 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
                 if (dimensions != null && !dimensions.Contains(item.Key))
                     continue;
 
+                if (item.Key == 0)
+                    return;
+
                 foreach(var simplex in item.Value)
                     simplex.Integrate(meshSteps);                
             }
