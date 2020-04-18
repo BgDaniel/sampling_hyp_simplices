@@ -13,5 +13,12 @@ namespace HypSimplexSampleFactory.ExampleConfigs
             Dimension = 3,
             MaxNorm = 5.0
         };
+
+        public static Options Hyper5_1000_5 = new Options
+        {
+            NumberSamples = 1000,
+            Dimension = 5,
+            MaxNorm = 5.0
+        };
     }
 }

@@ -30,7 +30,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             Chart = x => Parametrization(x.AsArray());
         }
 
-        public Tuple<int, Vector<double>>[] ComplementaryEdges(Tuple<int, Vector<double>>[] edges)
+        public List<Tuple<int, Vector<double>>> ComplementaryEdges(Tuple<int, Vector<double>>[] edges)
         {
             var ret = new List<Tuple<int, Vector<double>>>();
             var currentIndices = edges.Select(edge => edge.Item1).ToList();
@@ -41,7 +41,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                     ret.Add(new Tuple<int, Vector<double>>( Edges[ell].Item1, Edges[ell].Item2.Clone() ));
             }
 
-            return ret.ToArray();
+            return ret;
         }
 
         protected Vector<double> Parametrization(double[] t)
@@ -80,6 +80,17 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                     newEdges.Add(new Tuple<int, Vector<double>>(Edges[ell].Item1, (Vector<double>)Edges[ell].Item2.Clone()));
             }
 
+            return new EuclideanSimplex(newEdges.ToArray());
+        }
+
+        public EuclideanSimplex AddEdge(Tuple<int, Vector<double>> edge)
+        {
+            var newEdges = new List<Tuple<int, Vector<double>>>();
+
+            for (int ell = 0; ell < Dim + 1; ell++)
+                newEdges.Add(new Tuple<int, Vector<double>>(Edges[ell].Item1, Edges[ell].Item2.Clone()));
+
+            newEdges.Add(edge);
             return new EuclideanSimplex(newEdges.ToArray());
         }
 

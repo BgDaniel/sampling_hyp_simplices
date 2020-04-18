@@ -64,23 +64,16 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
 
                 foreach (var simplex in equalDimSimplices.Value)
                 {
-                    var complementaryIndices = Simplex0.Indices.Except(simplex.Indices).ToArray();
+                    var complementaryEdges = Simplex0.ComplementaryEdges(simplex.Edges);
 
-                    for (int i = 0; i < complementaryIndices.Length; i++)
+                    for (int i = 0; i < complementaryEdges.Count; i++)
                     {
-                        var index_i = complementaryIndices[i];
-                        var edgesExtended_i = simplex.Clone().Edges;
-                        edgesExtended_i[index_i] = Simplex0.Edges[index_i];
-                        var simplex_i = new EuclideanSimplex(edgesExtended_i);
+                        var simplex_i = simplex.AddEdge(complementaryEdges[i]);
 
-                        for (int j = i + 1; j < complementaryIndices.Length; j++)
+                        for (int j = i + 1; j < complementaryEdges.Count; j++)
                         {
-                            var index_j = complementaryIndices[j];
-                            var edgesExtended_j = simplex.Clone().Edges;
-                            edgesExtended_j[index_j] = Simplex0.Edges[index_j];
-                            var simplex_j = new EuclideanSimplex(edgesExtended_j);
-
-                            SimplexPairs[equalDimSimplices.Key].Add(new SimplexPair(simplex, simplex_i, simplex_j));
+                            var simplex_j = simplex.AddEdge(complementaryEdges[j]);
+                            SimplexPairs[equalDimSimplices.Key + 1].Add(new SimplexPair(simplex, simplex_i, simplex_j));
                         }
                     }
                 }                
