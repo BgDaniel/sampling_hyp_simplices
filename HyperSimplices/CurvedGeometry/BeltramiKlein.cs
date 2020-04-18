@@ -1,4 +1,5 @@
 ﻿using HyperSimplices.CurvedGeometry;
+using HyperSimplices.SimplicialGeometry;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace HyperSimplices
 
     public class ChartOverSimplex : LocalTrivialization
     {   
-        public ChartOverSimplex(Simplex simplex) : base(simplex.Chart, 
+        public ChartOverSimplex(EuclideanSimplex simplex) : base(simplex.Chart, 
             x => Matrix<double>.Build.DenseOfColumnVectors(simplex.DirectionalVectors), 
             new BeltramiKlein(simplex.Dim))
         {

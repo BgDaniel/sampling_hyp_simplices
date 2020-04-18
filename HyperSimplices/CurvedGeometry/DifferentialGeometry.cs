@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices.CurvedGeometry
 {
-    public delegate Vector<double> Diffeomorphism(Vector<double> x);
+    public delegate Vector<double> Parametrization(Vector<double> x);
     public delegate Matrix<double> PushForward(Vector<double> x);
     public delegate Matrix<double> MetricTensor(Vector<double> x);
 
@@ -22,7 +22,7 @@ namespace HyperSimplices.CurvedGeometry
             Metric = metric;
         }
 
-        public MetricTensor PullBack(Diffeomorphism f, PushForward df)
+        public MetricTensor PullBack(Parametrization f, PushForward df)
         {
             return x =>
             {
@@ -47,7 +47,7 @@ namespace HyperSimplices.CurvedGeometry
 
     public class LocalTrivialization : RiemannianSpace
     {
-        public LocalTrivialization(Diffeomorphism diffeo, PushForward ddiffeo, RiemannianSpace chartDomain) :
+        public LocalTrivialization(Parametrization diffeo, PushForward ddiffeo, RiemannianSpace chartDomain) :
             base(chartDomain.Dim, null)
         {
             Metric = PullBack(diffeo, ddiffeo);

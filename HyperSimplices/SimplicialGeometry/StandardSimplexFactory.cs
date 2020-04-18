@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperSimplices
+namespace HyperSimplices.SimplicialGeometry
 {
     public class StandardSimplexFactory
     {

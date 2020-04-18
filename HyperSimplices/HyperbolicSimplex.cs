@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+﻿using HyperSimplices.SimplicialGeometry;
+using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices
 {
-    public class HyperbolicSimplex : Simplex
+    public class HyperbolicSimplex : EuclideanSimplex
     {
         public ChartOverSimplex Trivialization { get; private set; }
 
-        public HyperbolicSimplex(List<Vector<double>> edges) : base(edges)
+        public HyperbolicSimplex(Dictionary<int, Vector<double>> edges) : base(edges)
         {
             Trivialization = new ChartOverSimplex(this);
         }

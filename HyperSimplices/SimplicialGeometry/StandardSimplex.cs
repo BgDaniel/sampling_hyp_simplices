@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperSimplices
+namespace HyperSimplices.SimplicialGeometry
 {
     public struct SimplexKey
     {
@@ -19,7 +19,7 @@ namespace HyperSimplices
         }
     }
 
-    public sealed class StandardSimplex : Simplex
+    public sealed class StandardSimplex : EuclideanSimplex
     {
         private static List<Vector<double>> GetStandardEdges(int dim)
         {
