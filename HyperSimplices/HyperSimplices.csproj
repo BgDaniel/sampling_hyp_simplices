@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Utils\ArrayHelpers.cs" />
-    <Compile Include="ChainComplexElement.cs" />
     <Compile Include="CurvedGeometry\DifferentialGeometry.cs" />
     <Compile Include="HyperbolicSimplex.cs" />
     <Compile Include="CurvedGeometry\BeltramiKlein.cs" />

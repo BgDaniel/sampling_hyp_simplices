@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices
 {
-    public abstract class Simplex<T> : ChainComplexElement, INegatable
+    public abstract class Simplex<T>
     {
         public List<T> Edges { get; set; }
         public int Dim { get; set; }
@@ -19,10 +19,39 @@ namespace HyperSimplices
         public T[] DirectionalVectors { get; set; }
         public Diffeomorphism Chart { get; set; }
         public abstract List<T> CreateMesh(int meshSteps);
+        public List<Simplex<T>> Faces { get; }
     }
 
     public class Simplex : Simplex<Vector<double>>
     {
+        public List<Simplex> Faces
+        {
+            get
+            {
+                var ret = new List<Simplex>();
+                var counter = 0;
+
+                foreach (var edge in Edges)
+                {
+                    var face = RemoveEdge(counter);
+
+                    if (counter % 2 != 0)
+                        face.Negate();
+                    
+                    ret.Add(face);
+                }
+
+                return ret;
+            }
+        }
+
+        protected Simplex RemoveEdge(int index)
+        {
+            var newEdges = Enumerable.Range(0, Edges.Count).Select(i => Edges[i].Clone()).ToList();
+            newEdges.RemoveAt(index);
+            return new Simplex(newEdges);
+        }
+
         public Simplex(List<Vector<double>> edges)
         {
             BasePoint = edges.First();
@@ -70,6 +99,11 @@ namespace HyperSimplices
                 BasePoint = Edges.First();
                 DirectionalVectors = Enumerable.Range(1, Dim + 1).Select(i => Edges[i] + BasePoint).ToArray();
             }
+        }
+
+        Simplex Clone()
+        {
+            return new Simplex(Enumerable.Range(0, Edges.Count).Select(i => Edges[i].Clone()).ToList());
         }
     }
 }
