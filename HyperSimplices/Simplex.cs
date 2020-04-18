@@ -17,9 +17,11 @@ namespace HyperSimplices
             Edges = edges;
             DimAmbiantSpace = BasePoint.Count;
             DirectionalVectors = Enumerable.Range(1, Dim + 1).Select(i => Edges[i] + BasePoint).ToArray();
+                        
+            Chart = x => Parametrization(x.AsArray());
         }
 
-        public override Vector<double> Parametrization(double[] t)
+        protected Vector<double> Parametrization(double[] t)
         {
             var ret = Vector<double>.Build.Dense(DimAmbiantSpace);
             

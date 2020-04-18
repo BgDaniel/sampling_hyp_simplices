@@ -14,6 +14,6 @@ namespace HyperSimplices
         public abstract void Negate();
         public T BasePoint { get; set; }
         public T[] DirectionalVectors { get; set; }
-        public abstract T Parametrization(double[] t);
+        public Diffeomorphism Chart { get; set; }
     }
 }

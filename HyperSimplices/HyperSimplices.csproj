@@ -63,6 +63,8 @@
   <ItemGroup>
     <Compile Include="ArrayHelpers.cs" />
     <Compile Include="ChainComplexElement.cs" />
+    <Compile Include="HyperbolicSimplex.cs" />
+    <Compile Include="HyperbolicSpace.cs" />
     <Compile Include="ISimplex.cs" />
     <Compile Include="Simplex.cs" />
     <Compile Include="StandardSimplex.cs" />
