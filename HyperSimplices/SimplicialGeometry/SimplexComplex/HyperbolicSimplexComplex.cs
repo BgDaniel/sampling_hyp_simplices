@@ -20,9 +20,9 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
         }
     }
 
-    public class EuclideanSimplexComplex<T> : GenericSimplexComplex<Vector<double>>
+    public class HyperbolicSimplexComplex<T> : GenericSimplexComplex<Vector<double>>
     {
-        public EuclideanSimplexComplex(EuclideanSimplex simplex0) : base(simplex0)
+        public HyperbolicSimplexComplex(HyperbolicSimplex simplex0) : base(simplex0)
         {
         }
     }

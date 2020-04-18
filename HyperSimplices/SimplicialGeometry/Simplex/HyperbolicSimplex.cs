@@ -29,7 +29,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return volume;
         }
 
-        public new List<HyperbolicSimplex> RandomSamples(int nbSamples, int dim, double maxNorm = 1.0)
+        public static new List<HyperbolicSimplex> RandomSamples(int nbSamples, int dim, double maxNorm = 1.0)
         {
             return EuclideanSimplex.RandomSamples(nbSamples, dim, Math.Tanh(maxNorm))
                 .Select(euclideanSimplex => new HyperbolicSimplex(euclideanSimplex.Edges)).ToList();

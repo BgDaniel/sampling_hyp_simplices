@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices.SimplicialGeometry.Simplex
 {
-    public class EuclideanSimplex : GenericSimplex<Vector<double>>, IEquatable<EuclideanSimplex>
+    public class EuclideanSimplex : GenericSimplex<Vector<double>>, IEquatable<EuclideanSimplex>, ICloneable
     {
         public EuclideanSimplex(Dictionary<int, Vector<double>> edges) : base(edges)
         {
@@ -89,6 +89,16 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
                 
             return ret; 
+        }
+
+        object ICloneable.Clone()
+        {
+            var edgesCloned = new Dictionary<int, Vector<double>>();
+
+            foreach (var edge in Edges)
+                edgesCloned[edge.Key] = (Vector<double>)edge.Value.Clone();
+
+            return new GenericSimplex<Vector<double>>(edgesCloned);
         }
     }
 }
