@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+﻿using HyperSimplices.CurvedGeometry;
+using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,13 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 {
     public class EuclideanSimplex : GenericSimplex<Vector<double>>, IEquatable<EuclideanSimplex>, ICloneable
     {
+        public Vector<double>[] DirectionalVectors { get; set; }
+        public int DimAmbiantSpace { get; set; }
+
         public EuclideanSimplex(Dictionary<int, Vector<double>> edges) : base(edges)
         {
-            BasePoint = edges.Values.First();
-            Dim = edges.Count - 1;
-            DimAmbiantSpace = BasePoint.Count;
-            DirectionalVectors = Enumerable.Range(1, Dim + 1).Select(i => Edges[i] + BasePoint).ToArray();
-
+            DirectionalVectors = Enumerable.Range(2, Dim).Select(i => Edges[i] - BasePoint).ToArray();
+            DimAmbiantSpace = BasePoint.Count();
             Chart = x => Parametrization(x.AsArray());
         }
 
@@ -41,6 +42,60 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
 
             return mesh;
+        }
+
+        public Parametrization Chart { get; set; }
+
+        public EuclideanSimplex RemoveEdge(int index)
+        {
+            var newEdges = new Dictionary<int, Vector<double>>();
+
+            foreach (var edge in Edges)
+            {
+                if (edge.Key != index)
+                    newEdges[edge.Key] = (Vector<double>)edge.Value.Clone();
+            }
+
+            return new EuclideanSimplex(newEdges);
+        }
+
+        public List<EuclideanSimplex> Faces
+        {
+            get
+            {
+                var ret = new List<EuclideanSimplex>();
+                var counter = 1;
+
+                foreach (var edge in Edges)
+                {
+                    var face = RemoveEdge(counter);
+
+                    if (counter % 2 != 0)
+                        face.Negate();
+
+                    ret.Add(face);
+                }
+
+                return ret;
+            }
+        }
+
+        public EuclideanSimplex GetOppositeFace(int index)
+        {
+            return RemoveEdge(index);
+        }
+
+        public List<EuclideanSimplex> GetAdjacentFaces(int index)
+        {
+            var adjacentFaces = new List<EuclideanSimplex>();
+
+            for (int ell = 0; ell < Dim + 1; ell++)
+            {
+                if (ell != index)
+                    adjacentFaces.Add(RemoveEdge(ell));
+            }
+
+            return adjacentFaces;
         }
 
         public override void Negate()
@@ -76,13 +131,13 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         public static List<EuclideanSimplex> RandomSamples(int nbSamples, int dim, double maxNorm = 1.0) 
         {
             var ret = new List<EuclideanSimplex>();
-            var rndVectors = ArrayHelpers.RandomVectors(nbSamples * dim, dim, maxNorm);
+            var rndVectors = ArrayHelpers.RandomVectors(nbSamples * (dim + 1), dim, maxNorm);
 
             for (int i = 0; i < nbSamples; i++)
             {
                 var edges = new Dictionary<int, Vector<double>>();
 
-                for (int j = 0; j < dim; j++)
+                for (int j = 0; j <= dim; j++)
                     edges[1 + j] = rndVectors[i * dim + j];
                 
                 ret.Add(new EuclideanSimplex(edges));

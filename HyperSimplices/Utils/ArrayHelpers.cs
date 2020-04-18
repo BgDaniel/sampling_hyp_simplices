@@ -61,7 +61,7 @@ namespace HyperSimplices
             var counter = 0;
             var continuousUniform = new ContinuousUniform(- maxNorm, + maxNorm);
 
-            while(counter <= nbSamples)
+            while(counter < nbSamples)
             {
                 var meetsCondition = false;
                 Vector<double> rndVector = null;

@@ -1,5 +1,6 @@
 ﻿using HyperSimplices.SimplicialGeometry.Simplex;
 using HyperSimplices.SimplicialGeometry.SimplexComplex;
+using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +22,19 @@ namespace HyperSimplices.SampleGeneration
             MaxNorm = maxNorm;
         }
 
-        public (List<HyperbolicSimplex>, List<GenericSimplexComplex<HyperbolicSimplex>>) RandomSamples()
+        public (List<HyperbolicSimplex>, List<SimplexComplex>) RandomSamples()
         {
             var randomSimplices = HyperbolicSimplex.RandomSamples(NbSamples, Dim, MaxNorm);
-            var hyperRandomComplexes = new List<GenericSimplexComplex<HyperbolicSimplex>>();
-            return (null, null);
+            var hyperRandomComplexes = new List<SimplexComplex>();
+
+            foreach (var randomSimplex in randomSimplices)                
+            {
+                var simplexComplex = new SimplexComplex(randomSimplex);
+                simplexComplex.Propagate();
+            }
+                
+
+            return (randomSimplices, null);
         }
     }
 }

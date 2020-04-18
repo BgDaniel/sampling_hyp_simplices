@@ -12,64 +12,19 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
     public class GenericSimplex<T> where T : ICloneable
     {
         public Dictionary<int, T> Edges { get; private set; }
-        public int Dim { get; set; }
-        public int DimAmbiantSpace { get; set; }
+        public int Dim => Edges.Count - 1;
         public virtual void Negate() { }
-        public T BasePoint { get; set; }
-        public T[] DirectionalVectors { get; set; }
-        public Parametrization Chart { get; set; }
-
-        public GenericSimplex<T> RemoveEdge(int index)
-        {
-            var newEdges = new Dictionary<int, T>();
-
-            foreach (var edge in Edges)
-            {
-                if(edge.Key != index)
-                    newEdges[edge.Key] = (T)edge.Value.Clone();
-            }
-            
-            return new GenericSimplex<T>(newEdges);
-        }        
-
-        public List<GenericSimplex<T>> Faces
+        public T BasePoint
         {
             get
             {
-                var ret = new List<GenericSimplex<T>>();
-                var counter = 0;
-
-                foreach (var edge in Edges)
-                {
-                    var face = RemoveEdge(counter);
-
-                    if (counter % 2 != 0)
-                        face.Negate();
-
-                    ret.Add(face);
-                }
-
-                return ret;
+                return Edges.Values.First();
             }
-        }
-
-        public GenericSimplex<T> GetOppositeFace(int index)
-        {
-            return RemoveEdge(index);
-        }
-
-        public List<GenericSimplex<T>> GetAdjacentFaces(int index)
-        {
-            var adjacentFaces = new List<GenericSimplex<T>>();
-            
-            for(int ell = 0; ell < Dim + 1; ell++)
+            set
             {
-                if(ell != index)
-                    adjacentFaces.Add(RemoveEdge(ell));                                
+                BasePoint = value;
             }
-            
-            return adjacentFaces;
-        }
+        }        
 
         public GenericSimplex(Dictionary<int, T> edges)
         {

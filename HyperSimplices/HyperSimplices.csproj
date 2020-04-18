@@ -63,8 +63,7 @@
   <ItemGroup>
     <Compile Include="SampleGeneration\SampleFactory.cs" />
     <Compile Include="SimplicialGeometry\Simplex\EuclideanSimplex.cs" />
-    <Compile Include="SimplicialGeometry\SimplexComplex\HyperbolicSimplexComplex.cs" />
-    <Compile Include="SimplicialGeometry\SimplexComplex\GenericSimplexComplex.cs" />
+    <Compile Include="SimplicialGeometry\SimplexComplex\SimplexComplex.cs" />
     <Compile Include="Utils\ArrayHelpers.cs" />
     <Compile Include="CurvedGeometry\DifferentialGeometry.cs" />
     <Compile Include="SimplicialGeometry\Simplex\HyperbolicSimplex.cs" />
