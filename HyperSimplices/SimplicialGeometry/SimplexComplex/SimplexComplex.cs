@@ -49,6 +49,11 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
             }
         }
 
+        public void ComputeAngles()
+        {
+
+        }
+
         public void Propagate()
         {
             for(var dim = Simplex0.Dim; dim > 0; dim--)

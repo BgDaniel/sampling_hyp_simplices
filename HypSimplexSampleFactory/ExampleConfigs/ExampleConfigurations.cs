@@ -36,5 +36,16 @@ namespace HypSimplexSampleFactory.ExampleConfigs
             Dimension = 7,
             MaxNorm = 5.0
         };
+
+        public static Options Hyper_4= new Options
+        {
+            NumberSamples = 10,
+            Dimension = 2,
+            Integrate = true,
+            MeshSteps = 500,
+            MaxNorm = 2.0,
+            ComputeAngles = true,
+            ZeroAmongEdges = true
+        };
     }
 }

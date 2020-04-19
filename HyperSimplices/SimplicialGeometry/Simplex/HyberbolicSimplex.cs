@@ -162,28 +162,39 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return Indices.GetHashCode();
         }
 
-        public static HyberbolicSimplex RandomSample(int dim, double maxNorm = 1.0)
+        public static HyberbolicSimplex RandomSample(int nbSamples, int dim, bool zeroAmongEdges = true, double maxNorm = double.NaN)
         {
-            return RandomSamples(1, dim, maxNorm)[0];
+            return RandomSamples(1, dim, zeroAmongEdges, maxNorm)[0];
         }
 
-        public static List<HyberbolicSimplex> RandomSamples(int nbSamples, int dim, double maxNorm = double.NaN) 
+        public static List<HyberbolicSimplex> RandomSamples(int nbSamples, int dim, bool zeroAmongEdges = true, double maxNorm = double.NaN) 
         {
             var ret = new List<HyberbolicSimplex>();
             var hyperbolicNorm = Math.Tanh(maxNorm);
-            var rndVectors = ArrayHelpers.RandomVectors(nbSamples * (dim + 1), dim, hyperbolicNorm);
+
+            var nbEdgesPerSimplex = zeroAmongEdges ? dim : dim + 1; ;            
+            var rndVectors = ArrayHelpers.RandomVectors(nbSamples * nbEdgesPerSimplex, dim, hyperbolicNorm);
 
             for (int i = 0; i < nbSamples; i++)
             {
                 var edges = new Tuple<int, Vector<double>>[dim + 1];
 
-                for (int j = 0; j <= dim; j++)
-                    edges[j] = new Tuple<int, Vector<double>>(j + 1, rndVectors[i * dim + j]);
-                
+                if(zeroAmongEdges)
+                {
+                    edges[0] = new Tuple<int, Vector<double>>(1, Vector<double>.Build.Dense(new double[dim]));
+                    for (int j = 1; j <= dim; j++)
+                        edges[j] = new Tuple<int, Vector<double>>(j + 1, rndVectors[i * (dim - 1) + j]);
+                }
+                else
+                {
+                    for (int j = 0; j <= dim; j++)
+                        edges[j] = new Tuple<int, Vector<double>>(j + 1, rndVectors[i * dim + j]);
+                }
+                                
                 ret.Add(new HyberbolicSimplex(edges));
             }
                 
-            return ret; 
+            "return ret; 
         }
 
         public HyberbolicSimplex Clone()

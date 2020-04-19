@@ -28,9 +28,9 @@ namespace HyperSimplices.SimplicialGeometry
             }
         }
 
-        public StandardSimplex GetStandardSimplex(int dimension, int meshSteps)
+        public StandardSimplex GetStandardSimplex(int dimension, int meshSteps, bool zeroAmongEdges)
         {
-            var simplexKey = new SimplexKey(dimension, meshSteps);
+            var simplexKey = new SimplexKey(dimension, meshSteps, zeroAmongEdges);
 
             if (m_standardSimplices.ContainsKey(simplexKey))
                 return m_standardSimplices[simplexKey];

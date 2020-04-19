@@ -10,13 +10,14 @@ namespace HypSimplexSampleFactory
         static void Main(string[] args)
         {
             //Execute(args);
-            Execute(ExampleConfigs.ExampleConfigurations.Hyper2_1000_500_2);
+            Execute(ExampleConfigs.ExampleConfigurations.Hyper_4);
         }
 
         private static void Execute(Options options)
         {
             Console.WriteLine(MessageAtStart(options));
-            var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.Integrate, options.MeshSteps, options.MaxNorm);
+            var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.Integrate, 
+                options.MeshSteps, options.MaxNorm, options.ZeroAmongEdges, options.ComputeAngles);
             (var randomSimplices, var hyperRandomComplexes) = sampleFactory.RandomSamples();            
         }
 
@@ -39,7 +40,9 @@ namespace HypSimplexSampleFactory
                            $"-d = {options.Dimension} \n" +
                            $"-b = {options.Integrate} \n" +
                            $"-i = {options.MeshSteps} \n" +
-                           $"-m = {options.MaxNorm} \n";
+                           $"-m = {options.MaxNorm} \n" +
+                           $"-z = {options.ZeroAmongEdges} \n" +
+                           $"-a = {options.ComputeAngles}";
         }
     }
 }

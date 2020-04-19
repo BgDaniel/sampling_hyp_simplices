@@ -8,15 +8,22 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices.SimplicialGeometry
 {
-    public struct SimplexKey
+    public struct SimplexKey : IEquatable<SimplexKey>
     {
         public int Dim { get; }
         public int MeshSteps { get; }
+        public bool ZeroAmongEdges { get; }
 
-        public SimplexKey(int dim, int meshSteps)
+        public SimplexKey(int dim, int meshSteps, bool zeroAmongEdges)
         {
             Dim = dim;
             MeshSteps = meshSteps;
+            ZeroAmongEdges = zeroAmongEdges;
+        }
+
+        public bool Equals(SimplexKey other)
+        {
+            return Dim == other.Dim && MeshSteps == other.MeshSteps && ZeroAmongEdges == other.ZeroAmongEdges;
         }
     }
 
