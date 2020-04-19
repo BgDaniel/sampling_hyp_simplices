@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using HyperSimplices.SampleGeneration;
+using HyperSimplices.Utils;
 using HypSimplexSampleFactory.CommandLineParser;
 using System;
 
@@ -7,6 +8,8 @@ namespace HypSimplexSampleFactory
 {
     class Program
     {
+        private static string _computing = "Generating random samples ...";
+
         static void Main(string[] args)
         {
             //Execute(args);
@@ -16,8 +19,14 @@ namespace HypSimplexSampleFactory
         private static void Execute(Options options)
         {
             Console.WriteLine(MessageAtStart(options));
+            
             var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.Integrate, 
                 options.MeshSteps, options.MaxNorm, options.ZeroAmongEdges, options.ComputeAngles);
+
+            var progressBar = new ProgressBar();
+            sampleFactory.RaiseSampleCreatorEvent += progressBar.HandleSampleCreationEvent;
+
+            Console.WriteLine(_computing);            
             (var randomSimplices, var hyperRandomComplexes) = sampleFactory.RandomSamples();            
         }
 
