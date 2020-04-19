@@ -45,7 +45,8 @@ namespace HypSimplexSampleFactory.ExampleConfigs
             MeshSteps = 500,
             MaxNorm = 2.0,
             ComputeAngles = true,
-            ZeroAmongEdges = true
+            ZeroAmongEdges = true,
+            ComputeLengthAnalytical = true
         };
     }
 }

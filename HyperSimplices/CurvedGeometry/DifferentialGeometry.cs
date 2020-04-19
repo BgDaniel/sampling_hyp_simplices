@@ -11,7 +11,7 @@ namespace HyperSimplices.CurvedGeometry
     public delegate Matrix<double> PushForward(Vector<double> x);
     public delegate Matrix<double> MetricTensor(Vector<double> x);
 
-    public class RiemannianSpace
+    public abstract class RiemannianSpace
     {
         public int Dim { get; set; }
         public MetricTensor Metric { get; set; }

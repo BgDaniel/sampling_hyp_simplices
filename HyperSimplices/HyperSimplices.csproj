@@ -61,13 +61,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurvedGeometry\BeltramiKLeinModel\BeltramiKlein2Dim.cs" />
     <Compile Include="SampleGeneration\SampleFactory.cs" />
     <Compile Include="SimplicialGeometry\Simplex\HyberbolicSimplex.cs" />
     <Compile Include="SimplicialGeometry\SimplexComplex\SimplexComplex.cs" />
     <Compile Include="Utils\ProgressBar.cs" />
     <Compile Include="Utils\VariousHelpers.cs" />
     <Compile Include="CurvedGeometry\DifferentialGeometry.cs" />
-    <Compile Include="CurvedGeometry\BeltramiKlein.cs" />
+    <Compile Include="CurvedGeometry\BeltramiKLeinModel\BeltramiKlein.cs" />
     <Compile Include="SimplicialGeometry\Simplex\GenericSimplex.cs" />
     <Compile Include="SimplicialGeometry\StandardSimplex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

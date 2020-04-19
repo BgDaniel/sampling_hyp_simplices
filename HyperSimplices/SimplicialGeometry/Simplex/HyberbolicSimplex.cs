@@ -1,4 +1,5 @@
 ﻿using HyperSimplices.CurvedGeometry;
+using HyperSimplices.CurvedGeometry.BeltramiKleinModel;
 using HyperSimplices.Utils;
 using MathNet.Numerics.LinearAlgebra;
 using System;
@@ -56,10 +57,13 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
         }
 
-        public void Integrate(int meshSteps)
+        public void Integrate(int meshSteps, bool calcLengthAnalytical = false)
         {
             if (Dim == 0)
                 return;
+
+            if (Dim == 1 && calcLengthAnalytical)
+                Volume = BeltramiKlein2Dim.Distance(this);
 
             var mesh = MeshFactory.Instance.GetMesh(Dim, meshSteps);
             Volume = .0;

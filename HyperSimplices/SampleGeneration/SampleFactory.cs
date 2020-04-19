@@ -19,11 +19,12 @@ namespace HyperSimplices.SampleGeneration
         public int MeshSteps { get; private set; }
         public bool ZeroAmongEdges { get; private set; }
         public bool ComputeAngles { get; private set; }
+        public bool ComputeLengthAnalytical { get; private set; }
 
         public event EventHandler<SampleCreationEventArgs> RaiseSampleCreatorEvent;
 
         public SampleFactory(int nbSamples, int dim, bool integrate = false, int meshSteps = 1000, double maxNorm = 1.0, 
-            bool zeroAmongEdges = false, bool computeAngles = false)
+            bool zeroAmongEdges = false, bool computeAngles = false, bool computeLengthAnalytical = false)
         {
             NbSamples = nbSamples;
             Dim = dim;
@@ -32,6 +33,7 @@ namespace HyperSimplices.SampleGeneration
             MeshSteps = meshSteps;
             ZeroAmongEdges = zeroAmongEdges;
             ComputeAngles = computeAngles;
+            ComputeLengthAnalytical = computeLengthAnalytical;
         }
 
         public (List<HyberbolicSimplex>, List<SimplexComplex>) RandomSamples()
@@ -48,7 +50,7 @@ namespace HyperSimplices.SampleGeneration
                 simplexComplex.Propagate();
                 
                 if(Integrate)
-                    simplexComplex.Integrate(MeshSteps);
+                    simplexComplex.Integrate(MeshSteps, null, ComputeLengthAnalytical);
 
                 if (ComputeAngles)
                     simplexComplex.ComputeAngles();

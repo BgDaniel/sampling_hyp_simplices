@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperSimplices
+namespace HyperSimplices.CurvedGeometry.BeltramiKleinModel
 {
     public class BeltramiKlein : RiemannianSpace
     {

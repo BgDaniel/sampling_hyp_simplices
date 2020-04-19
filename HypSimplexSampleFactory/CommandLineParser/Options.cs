@@ -27,5 +27,8 @@ namespace HypSimplexSampleFactory.CommandLineParser
 
         [Option('a', "compute angles", Required = false, Default = false, HelpText = "Flag whether determination of angles should be performed or not.")]
         public bool ComputeAngles { get; set; }
+
+        [Option('c', "compute hyperbolic length analytical", Required = false, Default = false, HelpText = "Flag whether computation of hyperbolic length will be performed analytical or via Monte Carlo integration.")]
+        public bool ComputeLengthAnalytical { get; set; }
     }
 }

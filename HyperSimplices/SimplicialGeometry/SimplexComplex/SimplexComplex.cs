@@ -53,7 +53,7 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
             SimplexPairs = new Dictionary<int, List<SimplexPair>>();            
         }
 
-        public void Integrate(int meshSteps, List<int> dimensions = null)
+        public void Integrate(int meshSteps, List<int> dimensions = null, bool computeLengthAnalytical = false)
         {
             foreach(var item in Chain)
             {
@@ -64,7 +64,7 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
                     return;
 
                 foreach(var simplex in item.Value)
-                    simplex.Integrate(meshSteps);                
+                    simplex.Integrate(meshSteps, computeLengthAnalytical);                
             }
         }
 
