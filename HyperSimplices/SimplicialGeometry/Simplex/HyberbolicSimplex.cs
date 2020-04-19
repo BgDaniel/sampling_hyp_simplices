@@ -40,6 +40,22 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             Trivialization = new LocalTrivialization(chart, pushForward, new BeltramiKlein(DimAmbiantSpace));
         }
 
+        public Vector<double> GetEdgeByIndex(int index)
+        {
+            if (!Indices.Contains(index))
+                return null;
+            else
+            {
+                for(int ell = 0; ell < Edges.Length; ell++)
+                {
+                    if (Edges[ell].Item1 == index)
+                        return Edges[ell].Item2;
+                }
+
+                return null;
+            }
+        }
+
         public void Integrate(int meshSteps)
         {
             if (Dim == 0)
@@ -173,7 +189,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             var hyperbolicNorm = Math.Tanh(maxNorm);
 
             var nbEdgesPerSimplex = zeroAmongEdges ? dim : dim + 1; ;            
-            var rndVectors = ArrayHelpers.RandomVectors(nbSamples * nbEdgesPerSimplex, dim, hyperbolicNorm);
+            var rndVectors = VariousHelpers.RandomVectors(nbSamples * nbEdgesPerSimplex, dim, hyperbolicNorm);
 
             for (int i = 0; i < nbSamples; i++)
             {
@@ -194,7 +210,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                 ret.Add(new HyberbolicSimplex(edges));
             }
                 
-            "return ret; 
+            return ret; 
         }
 
         public HyberbolicSimplex Clone()

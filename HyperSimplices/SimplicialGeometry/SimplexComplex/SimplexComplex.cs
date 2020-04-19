@@ -1,4 +1,5 @@
 ﻿using HyperSimplices.SimplicialGeometry.Simplex;
+using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,24 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
         public HyberbolicSimplex CommonBase { get; private set; }
         public HyberbolicSimplex Simplex1 { get; private set; }
         public HyberbolicSimplex Simplex2 { get; private set; }
+        public double Angle { get; private set; }
+
+        public void ComputeAngle()
+        {
+            var ind1 = Simplex1.Indices;
+            var ind2 = Simplex2.Indices;
+            
+            var ind1_ext = ind2.Except(ind1).ToArray()[0];
+            var vec1 = Simplex2.GetEdgeByIndex(ind1_ext);
+
+            var ind2_ext = ind1.Except(ind2).ToArray()[0];
+            var vec2 = Simplex1.GetEdgeByIndex(ind2_ext);
+
+            var norm1 = VariousHelpers.GetNormalVector(Simplex1, vec1 - Simplex1.BasePoint);
+            var norm2 = VariousHelpers.GetNormalVector(Simplex2, vec2 - Simplex2.BasePoint);
+
+            Angle = norm1.DotProduct(norm2) / (norm1.L2Norm() * norm2.L2Norm());
+        }
 
         public SimplexPair(HyberbolicSimplex commonBase, HyberbolicSimplex simplex1, HyberbolicSimplex simplex2)
         {
@@ -51,7 +70,11 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
 
         public void ComputeAngles()
         {
-
+            foreach (var item in SimplexPairs)
+            {
+                foreach (var simplexPair in item.Value)
+                    simplexPair.ComputeAngle();
+            }
         }
 
         public void Propagate()

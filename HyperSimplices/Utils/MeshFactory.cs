@@ -56,7 +56,7 @@ namespace HyperSimplices.Utils
                 return _meshs[meshKey];
             else
             {
-                _meshs[meshKey] = ArrayHelpers.CreateSimplexMesh(meshKey.MeshSteps, meshKey.Dim);
+                _meshs[meshKey] = VariousHelpers.CreateSimplexMesh(meshKey.MeshSteps, meshKey.Dim);
                 return _meshs[meshKey];
             }
         }

@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.Distributions;
+﻿using HyperSimplices.SimplicialGeometry.Simplex;
+using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices
 {
-    public static class ArrayHelpers
+    public static class VariousHelpers
     {
         private static List<double[]> FillNextEntry(double[] arr, int atPosition, double[] values)
         {
@@ -76,6 +77,18 @@ namespace HyperSimplices
             }
 
             return ret;
+        }
+
+        public static Vector<double> GetNormalVector(HyberbolicSimplex simplex, Vector<double> b)
+        {
+            var A = Matrix<double>.Build.DenseOfColumnVectors(simplex.DirectionalVectors);
+            var A_T = A.Transpose();
+            var AT_B = A_T * b;
+            var AT_A = A_T * A;
+            var x_0 = AT_A.Solve(AT_B);
+
+            var normal = b - A * x_0;
+            return normal / normal.L2Norm();
         }
     }
 

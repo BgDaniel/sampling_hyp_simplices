@@ -64,7 +64,7 @@
     <Compile Include="SampleGeneration\SampleFactory.cs" />
     <Compile Include="SimplicialGeometry\Simplex\HyberbolicSimplex.cs" />
     <Compile Include="SimplicialGeometry\SimplexComplex\SimplexComplex.cs" />
-    <Compile Include="Utils\ArrayHelpers.cs" />
+    <Compile Include="Utils\VariousHelpers.cs" />
     <Compile Include="CurvedGeometry\DifferentialGeometry.cs" />
     <Compile Include="CurvedGeometry\BeltramiKlein.cs" />
     <Compile Include="SimplicialGeometry\Simplex\GenericSimplex.cs" />
