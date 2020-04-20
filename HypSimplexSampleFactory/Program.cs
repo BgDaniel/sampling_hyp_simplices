@@ -21,7 +21,7 @@ namespace HypSimplexSampleFactory
             Console.WriteLine(MessageAtStart(options));
             
             var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.Integrate, 
-                options.MeshSteps, options.MaxNorm, options.ZeroAmongEdges, options.ComputeAngles, options.ComputeLengthAnalytical);
+                options.MeshSteps, options.MaxNorm, options.ZeroAmongEdges, options.ComputeAngles, options.ComputeAnalytical);
 
             var progressBar = new ProgressBar();
             sampleFactory.RaiseSampleCreatorEvent += progressBar.HandleSampleCreationEvent;
@@ -52,7 +52,7 @@ namespace HypSimplexSampleFactory
                            $"-m = {options.MaxNorm} \n" +
                            $"-z = {options.ZeroAmongEdges} \n" +
                            $"-a = {options.ComputeAngles}" +
-                           $"-c = {options.ComputeLengthAnalytical}";
+                           $"-c = {options.ComputeAnalytical}";
         }
     }
 }

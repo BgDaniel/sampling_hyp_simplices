@@ -1,4 +1,5 @@
-﻿using HyperSimplices.SimplicialGeometry.Simplex;
+﻿using HyperSimplices.Geometry;
+using HyperSimplices.SimplicialGeometry.Simplex;
 using HyperSimplices.SimplicialGeometry.SimplexComplex;
 using MathNet.Numerics.LinearAlgebra;
 using System;
@@ -19,12 +20,13 @@ namespace HyperSimplices.SampleGeneration
         public int MeshSteps { get; private set; }
         public bool ZeroAmongEdges { get; private set; }
         public bool ComputeAngles { get; private set; }
-        public bool ComputeLengthAnalytical { get; private set; }
+        public bool ComputeAnalytical { get; private set; }
+        public CurvatureType CurvatureType { get; private set; }
 
         public event EventHandler<SampleCreationEventArgs> RaiseSampleCreatorEvent;
 
         public SampleFactory(int nbSamples, int dim, bool integrate = false, int meshSteps = 1000, double maxNorm = 1.0, 
-            bool zeroAmongEdges = false, bool computeAngles = false, bool computeLengthAnalytical = false)
+            bool zeroAmongEdges = false, bool computeAngles = false, bool computeAnalytical = false, CurvatureType curvatureType = CurvatureType.NEGATIVE)
         {
             NbSamples = nbSamples;
             Dim = dim;
@@ -33,12 +35,13 @@ namespace HyperSimplices.SampleGeneration
             MeshSteps = meshSteps;
             ZeroAmongEdges = zeroAmongEdges;
             ComputeAngles = computeAngles;
-            ComputeLengthAnalytical = computeLengthAnalytical;
+            ComputeAnalytical = computeAnalytical;
+            CurvatureType = curvatureType;
         }
 
-        public (List<HyberbolicSimplex>, List<SimplexComplex>) RandomSamples()
+        public (List<Simplex>, List<SimplexComplex>) RandomSamples()
         {
-            var randomSimplices = HyberbolicSimplex.RandomSamples(NbSamples, Dim, ZeroAmongEdges, MaxNorm);
+            var randomSimplices = Simplex.RandomSamples(NbSamples, Dim, Geometries.GetSpace(CurvatureType, Dim), ZeroAmongEdges, MaxNorm);
             var hyperRandomComplexes = new List<SimplexComplex>();
             var counter = 0;
 
@@ -50,7 +53,7 @@ namespace HyperSimplices.SampleGeneration
                 simplexComplex.Propagate();
                 
                 if(Integrate)
-                    simplexComplex.Integrate(MeshSteps, null, ComputeLengthAnalytical);
+                    simplexComplex.Integrate(MeshSteps, null, ComputeAnalytical);
 
                 if (ComputeAngles)
                     simplexComplex.ComputeAngles();

@@ -13,6 +13,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
     {
         public Tuple<int, T>[] Edges { get; private set; }
         public int Dim => Edges.Length - 1;
+        public int DimAmbiantSpace { get; set; }  
         public T BasePoint
         {
             get
@@ -23,7 +24,9 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             {
                 BasePoint = value;
             }
-        }        
+        }
+
+        public RiemannianSpace AmbiantSpace { get; set; }
 
         public GenericSimplex(Tuple<int, T>[] edges)
         {

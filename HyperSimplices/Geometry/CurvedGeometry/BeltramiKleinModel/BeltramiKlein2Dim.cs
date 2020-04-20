@@ -15,7 +15,7 @@ namespace HyperSimplices.CurvedGeometry.BeltramiKleinModel
     {
         public BeltramiKlein2Dim(double curvature = 1) : base(2, curvature) { }
 
-        public static double Distance(HyberbolicSimplex line)
+        public static double Distance(Simplex line)
         {
             var p = line.Edges[0].Item2;
             var q = line.Edges[1].Item2;
@@ -34,6 +34,18 @@ namespace HyperSimplices.CurvedGeometry.BeltramiKleinModel
             var qb = (q - b).L2Norm();
 
             return .5 * Math.Log((aq * pb) / (ap * qb));
+        }
+
+        public static double Surface(Simplex surface)
+        {
+            var a = surface.Edges[0].Item2;
+            var b = surface.Edges[1].Item2;
+            var c = surface.Edges[2].Item2;
+            var alpha = VariousHelpers.Angle(b, c);
+            var beta = VariousHelpers.Angle(a, c);
+            var gamma = VariousHelpers.Angle(a, b);
+
+            return Math.PI - alpha - beta - gamma;
         }
     }
 }

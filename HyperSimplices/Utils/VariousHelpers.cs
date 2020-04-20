@@ -79,7 +79,7 @@ namespace HyperSimplices
             return ret;
         }
 
-        public static Vector<double> GetNormalVector(HyberbolicSimplex simplex, Vector<double> b)
+        public static Vector<double> GetNormalVector(Simplex simplex, Vector<double> b)
         {
             var A = Matrix<double>.Build.DenseOfColumnVectors(simplex.DirectionalVectors);
             var A_T = A.Transpose();
@@ -88,7 +88,19 @@ namespace HyperSimplices
             var x_0 = AT_A.Solve(AT_B);
 
             var normal = b - A * x_0;
-            return normal / normal.L2Norm();
+
+            var cols = A.EnumerateColumns().ToList();
+            cols.Add(b);
+            var AB = Matrix<double>.Build.DenseOfColumnVectors(cols);
+            var AB_T = AB.Transpose();
+            var sign = Math.Sign(AB_T.Determinant());
+
+            return sign * normal / normal.L2Norm();
+        }
+
+        public static double Angle(Vector<double> a, Vector<double> b)
+        {
+            return (a.DotProduct(b)) / (a.L2Norm() * b.L2Norm());
         }
     }
 

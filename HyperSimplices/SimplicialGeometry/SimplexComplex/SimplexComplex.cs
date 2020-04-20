@@ -10,9 +10,9 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
 {
     public class SimplexPair
     {
-        public HyberbolicSimplex CommonBase { get; private set; }
-        public HyberbolicSimplex Simplex1 { get; private set; }
-        public HyberbolicSimplex Simplex2 { get; private set; }
+        public Simplex.Simplex CommonBase { get; private set; }
+        public Simplex.Simplex Simplex1 { get; private set; }
+        public Simplex.Simplex Simplex2 { get; private set; }
         public double Angle { get; private set; }
 
         public void ComputeAngle()
@@ -26,13 +26,13 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
             var ind2_ext = ind1.Except(ind2).ToArray()[0];
             var vec2 = Simplex1.GetEdgeByIndex(ind2_ext);
 
-            var norm1 = VariousHelpers.GetNormalVector(Simplex1, vec1 - Simplex1.BasePoint);
-            var norm2 = VariousHelpers.GetNormalVector(Simplex2, vec2 - Simplex2.BasePoint);
+            var normal1 = VariousHelpers.GetNormalVector(Simplex1, vec1 - Simplex1.BasePoint);
+            var normal2 = VariousHelpers.GetNormalVector(Simplex2, vec2 - Simplex2.BasePoint);
 
-            Angle = norm1.DotProduct(norm2) / (norm1.L2Norm() * norm2.L2Norm());
+            Angle = normal1.DotProduct(normal2) / (normal1.L2Norm() * normal2.L2Norm());
         }
 
-        public SimplexPair(HyberbolicSimplex commonBase, HyberbolicSimplex simplex1, HyberbolicSimplex simplex2)
+        public SimplexPair(Simplex.Simplex commonBase, Simplex.Simplex simplex1, Simplex.Simplex simplex2)
         {
             CommonBase = commonBase;
             Simplex1 = simplex1;
@@ -42,18 +42,18 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
 
     public class SimplexComplex
     {
-        public HyberbolicSimplex Simplex0 { get; private set; }
-        public Dictionary<int, List<HyberbolicSimplex>> Chain { get; private set; }
+        public Simplex.Simplex Simplex0 { get; private set; }
+        public Dictionary<int, List<Simplex.Simplex>> Chain { get; private set; }
         public Dictionary<int, List<SimplexPair>> SimplexPairs { get; private set; }
 
-        public SimplexComplex(HyberbolicSimplex simplex0)
+        public SimplexComplex(Simplex.Simplex simplex0)
         {
             Simplex0 = simplex0;
-            Chain = new Dictionary<int, List<HyberbolicSimplex>> { [Simplex0.Dim] = new List<HyberbolicSimplex> { Simplex0 } };
+            Chain = new Dictionary<int, List<Simplex.Simplex>> { [Simplex0.Dim] = new List<Simplex.Simplex> { Simplex0 } };
             SimplexPairs = new Dictionary<int, List<SimplexPair>>();            
         }
 
-        public void Integrate(int meshSteps, List<int> dimensions = null, bool computeLengthAnalytical = false)
+        public void Integrate(int meshSteps, List<int> dimensions = null, bool computeAnalytical = false)
         {
             foreach(var item in Chain)
             {
@@ -64,7 +64,7 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
                     return;
 
                 foreach(var simplex in item.Value)
-                    simplex.Integrate(meshSteps, computeLengthAnalytical);                
+                    simplex.Integrate(meshSteps, computeAnalytical);                
             }
         }
 
@@ -94,7 +94,7 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
                         }
                     }
                     else
-                        Chain[dim - 1] = new List<HyberbolicSimplex>(simplex.Faces);                    
+                        Chain[dim - 1] = new List<Simplex.Simplex>(simplex.Faces);                    
                 }                    
             }
 

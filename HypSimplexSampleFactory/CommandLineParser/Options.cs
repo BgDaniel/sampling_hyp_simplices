@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using HyperSimplices.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,6 +30,9 @@ namespace HypSimplexSampleFactory.CommandLineParser
         public bool ComputeAngles { get; set; }
 
         [Option('c', "compute hyperbolic length analytical", Required = false, Default = false, HelpText = "Flag whether computation of hyperbolic length will be performed analytical or via Monte Carlo integration.")]
-        public bool ComputeLengthAnalytical { get; set; }
+        public bool ComputeAnalytical { get; set; }
+
+        [Option('t', "type of curvature", Required = false, Default = CurvatureType.NEGATIVE, HelpText = "Type of ambiant space curvature.")]
+        public CurvatureType CurvatureType { get; set; }
     }
 }

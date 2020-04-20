@@ -10,15 +10,14 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices.SimplicialGeometry.Simplex
 {
-    public class HyberbolicSimplex : GenericSimplex<Vector<double>>, IEquatable<HyberbolicSimplex>
+    public class Simplex : GenericSimplex<Vector<double>>, IEquatable<Simplex>
     {
         public LocalTrivialization Trivialization { get; private set; }
-        public Vector<double>[] DirectionalVectors { get; set; }
-        public int DimAmbiantSpace { get; set; }        
+        public Vector<double>[] DirectionalVectors { get; set; }              
         public List<int> Indices => Edges.Select(edge => edge.Item1).ToList();
         public double Volume { get; private set; }
 
-        public HyberbolicSimplex(Tuple<int, Vector<double>>[] edges) : base(edges)
+        public Simplex(Tuple<int, Vector<double>>[] edges, RiemannianSpace ambiantSpace) : base(edges)
         {
             var directionalVectors = new List<Vector<double>>();
 
@@ -38,7 +37,8 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                 return Matrix<double>.Build.DenseOfColumnVectors(DirectionalVectors);
             };
 
-            Trivialization = new LocalTrivialization(chart, pushForward, new BeltramiKlein(DimAmbiantSpace));
+            AmbiantSpace = ambiantSpace;
+            Trivialization = new LocalTrivialization(chart, pushForward, ambiantSpace);
         }
 
         public Vector<double> GetEdgeByIndex(int index)
@@ -57,13 +57,16 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
         }
 
-        public void Integrate(int meshSteps, bool calcLengthAnalytical = false)
+        public void Integrate(int meshSteps, bool calcAnalytical = false)
         {
             if (Dim == 0)
                 return;
 
-            if (Dim == 1 && calcLengthAnalytical)
+            if (Dim == 1 && calcAnalytical)
                 Volume = BeltramiKlein2Dim.Distance(this);
+
+            if (Dim == 2 && calcAnalytical)
+                Volume = BeltramiKlein2Dim.Surface(this);
 
             var mesh = MeshFactory.Instance.GetMesh(Dim, meshSteps);
             Volume = .0;
@@ -87,7 +90,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return ret;
         }
 
-        public HyberbolicSimplex RemoveEdge(int index)
+        public Simplex RemoveEdge(int index)
         {
             var newEdges = new List<Tuple<int, Vector<double>>>();
             
@@ -97,10 +100,10 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                     newEdges.Add(new Tuple<int, Vector<double>>(Edges[ell].Item1, (Vector<double>)Edges[ell].Item2.Clone()));
             }
 
-            return new HyberbolicSimplex(newEdges.ToArray());
+            return new Simplex(newEdges.ToArray(), AmbiantSpace);
         }
 
-        public HyberbolicSimplex AddEdge(Tuple<int, Vector<double>> edge)
+        public Simplex AddEdge(Tuple<int, Vector<double>> edge)
         {
             var newEdges = new List<Tuple<int, Vector<double>>>();
 
@@ -108,14 +111,14 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                 newEdges.Add(new Tuple<int, Vector<double>>(Edges[ell].Item1, Edges[ell].Item2.Clone()));
 
             newEdges.Add(edge);
-            return new HyberbolicSimplex(newEdges.ToArray());
+            return new Simplex(newEdges.ToArray(), AmbiantSpace);
         }
 
-        public List<HyberbolicSimplex> Faces
+        public List<Simplex> Faces
         {
             get
             {
-                var ret = new List<HyberbolicSimplex>();
+                var ret = new List<Simplex>();
                 var ell = 0;
 
                 foreach (var edge in Edges)
@@ -133,14 +136,14 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
         }
 
-        public HyberbolicSimplex GetOppositeFace(int index)
+        public Simplex GetOppositeFace(int index)
         {
             return RemoveEdge(index);
         }
 
-        public List<HyberbolicSimplex> GetAdjacentFaces(int index)
+        public List<Simplex> GetAdjacentFaces(int index)
         {
-            var adjacentFaces = new List<HyberbolicSimplex>();
+            var adjacentFaces = new List<Simplex>();
 
             for (int ell = 0; ell < Dim + 1; ell++)
             {
@@ -151,10 +154,10 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return adjacentFaces;
         }
 
-        public HyberbolicSimplex Negate()
+        public Simplex Negate()
         {
             if (Dim == 0)
-                return (HyberbolicSimplex)Clone();
+                return (Simplex)Clone();
             else
             {
                 var edgesCloned = new Tuple<int, Vector<double>>[Dim + 1];
@@ -167,11 +170,11 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                 edgesCloned[0] = edgesCloned[1];
                 edgesCloned[1] = new Tuple<int, Vector<double>>( firstIndex, firstEdge );
             
-                return new HyberbolicSimplex(edgesCloned);
+                return new Simplex(edgesCloned, AmbiantSpace);
             }
         }
 
-        bool IEquatable<HyberbolicSimplex>.Equals(HyberbolicSimplex other)
+        bool IEquatable<Simplex>.Equals(Simplex other)
         {
             var edgeIndices = new HashSet<int>(other.Indices);
             return edgeIndices.SetEquals(new HashSet<int>(Indices));
@@ -182,14 +185,14 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return Indices.GetHashCode();
         }
 
-        public static HyberbolicSimplex RandomSample(int nbSamples, int dim, bool zeroAmongEdges = true, double maxNorm = double.NaN)
+        public static Simplex RandomSample(int nbSamples, int dim, RiemannianSpace ambiantSpace, bool zeroAmongEdges = true, double maxNorm = double.NaN)
         {
-            return RandomSamples(1, dim, zeroAmongEdges, maxNorm)[0];
+            return RandomSamples(1, dim, ambiantSpace, zeroAmongEdges, maxNorm)[0];
         }
 
-        public static List<HyberbolicSimplex> RandomSamples(int nbSamples, int dim, bool zeroAmongEdges = true, double maxNorm = double.NaN) 
+        public static List<Simplex> RandomSamples(int nbSamples, int dim, RiemannianSpace ambiantSpace, bool zeroAmongEdges = true, double maxNorm = double.NaN) 
         {
-            var ret = new List<HyberbolicSimplex>();
+            var ret = new List<Simplex>();
             var hyperbolicNorm = Math.Tanh(maxNorm);
 
             var nbEdgesPerSimplex = zeroAmongEdges ? dim : dim + 1; ;            
@@ -211,20 +214,20 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                         edges[j] = new Tuple<int, Vector<double>>(j + 1, rndVectors[i * dim + j]);
                 }
                                 
-                ret.Add(new HyberbolicSimplex(edges));
+                ret.Add(new Simplex(edges, ambiantSpace));
             }
                 
             return ret; 
         }
 
-        public HyberbolicSimplex Clone()
+        public Simplex Clone()
         {
             var edgesCloned = new Tuple<int, Vector<double>>[Dim + 1];
             
             for(int ell = 0; ell < Dim + 1; ell++)
                 edgesCloned[ell] = new Tuple<int, Vector<double>>( Edges[ell].Item1, Edges[ell].Item2.Clone() );
             
-            return new HyberbolicSimplex(edgesCloned);
+            return new Simplex(edgesCloned, AmbiantSpace);
         }
     }
 }

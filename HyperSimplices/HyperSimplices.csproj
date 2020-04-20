@@ -61,18 +61,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CurvedGeometry\BeltramiKLeinModel\BeltramiKlein2Dim.cs" />
+    <Compile Include="Geometry\CurvedGeometry\BeltramiKleinModel\BeltramiKlein2Dim.cs" />
+    <Compile Include="Geometry\EuclideanGeometry.cs" />
+    <Compile Include="Geometry\Geometries.cs" />
     <Compile Include="SampleGeneration\SampleFactory.cs" />
-    <Compile Include="SimplicialGeometry\Simplex\HyberbolicSimplex.cs" />
+    <Compile Include="SimplicialGeometry\Simplex\EuclideanSimplex.cs" />
+    <Compile Include="SimplicialGeometry\Simplex\HyperbolicSimplex.cs" />
+    <Compile Include="SimplicialGeometry\Simplex\Simplex.cs" />
     <Compile Include="SimplicialGeometry\SimplexComplex\SimplexComplex.cs" />
+    <Compile Include="Utils\Permutations.cs" />
     <Compile Include="Utils\ProgressBar.cs" />
     <Compile Include="Utils\VariousHelpers.cs" />
-    <Compile Include="CurvedGeometry\DifferentialGeometry.cs" />
-    <Compile Include="CurvedGeometry\BeltramiKLeinModel\BeltramiKlein.cs" />
+    <Compile Include="Geometry\CurvedGeometry\DifferentialGeometry.cs" />
+    <Compile Include="Geometry\CurvedGeometry\BeltramiKleinModel\BeltramiKlein.cs" />
     <Compile Include="SimplicialGeometry\Simplex\GenericSimplex.cs" />
-    <Compile Include="SimplicialGeometry\StandardSimplex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimplicialGeometry\StandardSimplexFactory.cs" />
     <Compile Include="Utils\MeshFactory.cs" />
   </ItemGroup>
   <ItemGroup>
