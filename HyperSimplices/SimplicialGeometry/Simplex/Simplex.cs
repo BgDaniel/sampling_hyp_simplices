@@ -15,7 +15,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         public LocalTrivialization Trivialization { get; private set; }
         public Vector<double>[] DirectionalVectors { get; set; }              
         public List<int> Indices => Edges.Select(edge => edge.Item1).ToList();
-        public double Volume { get; private set; }
+        public double Volume { get; set; }
 
         public Simplex(Tuple<int, Vector<double>>[] edges, RiemannianSpace ambiantSpace) : base(edges)
         {
@@ -57,16 +57,10 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
         }
 
-        public void Integrate(int meshSteps, bool calcAnalytical = false)
+        public virtual void Integrate(int meshSteps, bool calcAnalytical = false)
         {
             if (Dim == 0)
                 return;
-
-            if (Dim == 1 && calcAnalytical)
-                Volume = BeltramiKlein2Dim.Distance(this);
-
-            if (Dim == 2 && calcAnalytical)
-                Volume = BeltramiKlein2Dim.Surface(this);
 
             var mesh = MeshFactory.Instance.GetMesh(Dim, meshSteps);
             Volume = .0;

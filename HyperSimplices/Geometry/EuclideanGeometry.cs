@@ -13,7 +13,7 @@ namespace HyperSimplices
     {
         public double Curvature { get; private set; }
 
-        public EuclideanGeometry(int dim, double curvature = 1.0) : base(dim, x =>
+        public EuclideanGeometry(int dim, double curvature = .0) : base(dim, x =>
             {
                 return Matrix<double>.Build.DenseIdentity(dim);
             })
@@ -25,7 +25,7 @@ namespace HyperSimplices
         {
             var A = Matrix<double>.Build.DenseOfColumnVectors(simplex.DirectionalVectors);
             var AT_A = A.Transpose() * A;
-            return Math.Sqrt(AT_A.Determinant());
+            return Math.Sqrt(AT_A.Determinant()) * Math.Pow( .5, simplex.Dim);
         }
     }
 }
