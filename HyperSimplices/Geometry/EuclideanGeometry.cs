@@ -25,7 +25,7 @@ namespace HyperSimplices
         {
             var A = Matrix<double>.Build.DenseOfColumnVectors(simplex.DirectionalVectors);
             var AT_A = A.Transpose() * A;
-            return Math.Sqrt(AT_A.Determinant()) * Math.Pow( .5, simplex.Dim);
+            return Math.Sqrt(AT_A.Determinant()) * Math.Pow( .5, simplex.Dim - 1);
         }
     }
 }

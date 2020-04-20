@@ -62,12 +62,33 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             if (Dim == 0)
                 return;
 
-            var mesh = MeshFactory.Instance.GetMesh(Dim, meshSteps);
-            Volume = .0;
-            var dVol = Math.Pow(1.0 / meshSteps, Dim);
+            if(calcAnalytical)
+            {   
+                if(AmbiantSpace.GetType() == typeof(BeltramiKlein))
+                {
+                    if (Dim == 1 || Dim == 2)
+                    {
+                        if (Dim == 1 && calcAnalytical)
+                            Volume = BeltramiKlein2Dim.Distance(this);
 
-            foreach (var meshPoint in mesh)
-                Volume += Trivialization.GramDeterminant(meshPoint) * dVol;
+                        if (Dim == 2 && calcAnalytical)
+                            Volume = BeltramiKlein2Dim.Surface(this);
+                    }
+                }
+                else if (AmbiantSpace.GetType() == typeof(EuclideanGeometry))
+                {
+                    Volume = EuclideanGeometry.Volume(this);
+                }              
+            }
+            else
+            {
+                var mesh = MeshFactory.Instance.GetMesh(Dim, meshSteps);
+                Volume = .0;
+                var dVol = Math.Pow(1.0 / meshSteps, Dim);
+
+                foreach (var meshPoint in mesh)
+                    Volume += Trivialization.GramDeterminant(meshPoint) * dVol;
+            }
         }
 
         public List<Tuple<int, Vector<double>>> ComplementaryEdges(Tuple<int, Vector<double>>[] edges)
@@ -177,11 +198,6 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         public override int GetHashCode()
         {
             return Indices.GetHashCode();
-        }
-
-        public static Simplex RandomSample(int nbSamples, int dim, RiemannianSpace ambiantSpace, bool zeroAmongEdges = true, double maxNorm = double.NaN)
-        {
-            return RandomSamples(1, dim, ambiantSpace, zeroAmongEdges, maxNorm)[0];
         }
 
         public static List<Simplex> RandomSamples(int nbSamples, int dim, RiemannianSpace ambiantSpace, bool zeroAmongEdges = true, double maxNorm = double.NaN) 

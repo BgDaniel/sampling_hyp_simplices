@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using HyperSimplices.Geometry;
 using HyperSimplices.SimplicialGeometry.Simplex;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Xunit;
+using NUnit;
+using NUnit.Framework;
 
 namespace HyperSimplices.UnitTests
 {
@@ -14,17 +16,14 @@ namespace HyperSimplices.UnitTests
         public const double MAX_NORM = 2.0;
         public const int MESH_STEPS = 500;
 
-        [Theory]
-        [InlineData(CurvatureType.FLAT)]
-        public void TestEulcideanVolume(CurvatureType curvatureType)
+        [TestCase(CurvatureType.FLAT)]
+        public void TestVolume(CurvatureType curvatureType)
         {
-            List<Simplex> randomSamples;
-
             for (int iDim = 1; iDim < 5; iDim++)
             {
                 var ambiantSpace = Geometries.GetSpace(curvatureType, iDim);
-                randomSamples = Simplex.RandomSamples(NUMBER_SAMPLES, iDim, ambiantSpace, true, MAX_NORM);
-
+                var randomSamples = Simplex.RandomSamples(NUMBER_SAMPLES, iDim, ambiantSpace, true, MAX_NORM);
+                      
                 foreach(var simplex in randomSamples)
                 {
                     simplex.Integrate(MESH_STEPS, true);

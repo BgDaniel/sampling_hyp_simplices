@@ -41,7 +41,9 @@ namespace HyperSimplices.SampleGeneration
 
         public (List<Simplex>, List<SimplexComplex>) RandomSamples()
         {
-            var randomSimplices = Simplex.RandomSamples(NbSamples, Dim, Geometries.GetSpace(CurvatureType, Dim), ZeroAmongEdges, MaxNorm);
+
+            var riemannianSpace = Geometries.GetSpace(CurvatureType, Dim);
+            var randomSimplices = Simplex.RandomSamples(NbSamples, Dim, riemannianSpace, ZeroAmongEdges, MaxNorm);
             var hyperRandomComplexes = new List<SimplexComplex>();
             var counter = 0;
 
@@ -49,6 +51,7 @@ namespace HyperSimplices.SampleGeneration
             {
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
+
                 var simplexComplex = new SimplexComplex(randomSimplex);
                 simplexComplex.Propagate();
                 
