@@ -19,7 +19,7 @@ namespace HyperSimplices.CurvedGeometry.BeltramiKleinModel
         {
             var p = line.Edges[0].Item2;
             var q = line.Edges[1].Item2;
-            Line line_pq = t => q + (p - q) * t;
+            Line line_pq = t => p + (q - p) * t;
             Func<double, double> f = t => line_pq(t).L2Norm() - 1.0;
 
             var t_a = FindRoots.OfFunction(f, - 3.0 / (p - q).L2Norm(), .0);

@@ -30,7 +30,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 
             Parametrization chart = x => {
                 var dir = Matrix<double>.Build.DenseOfColumnVectors(DirectionalVectors);
-                return dir * x;
+                return dir * x + BasePoint;
             };
 
             PushForward pushForward = x => {
