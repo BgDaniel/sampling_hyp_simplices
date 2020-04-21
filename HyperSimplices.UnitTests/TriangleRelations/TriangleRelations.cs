@@ -27,7 +27,7 @@ namespace HyperSimplices.UnitTests.TriangleRelations
             => Math.Tan(alpha) + Math.Tan(beta) + Math.Tan(gamma) - Math.Tan(alpha) * Math.Tan(beta) * Math.Tan(gamma);
 
         static RelationAnlges COTANGENT = (alpha, beta, gamma)
-            => 1.0 / (Math.Tan(beta) * Math.Tan(gamma)) + 1.0 / (Math.Tan(gamma) * Math.Tan(alpha)) + 1.0 / (Math.Tan(alpha) * Math.Tan(beta));
+            => 1.0 / (Math.Tan(beta) * Math.Tan(gamma)) + 1.0 / (Math.Tan(gamma) * Math.Tan(alpha)) + 1.0 / (Math.Tan(alpha) * Math.Tan(beta)) - 1.0;
 
         protected Dictionary<string, RelationAnlges> GetAnlgeRelations()
         {

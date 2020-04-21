@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EuclideanGeometryTest.cs" />
+    <Compile Include="HyperbolicGeometryTest.cs" />
     <Compile Include="TriangleRelations\TriangleRelations.cs" />
     <Compile Include="VolumeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
