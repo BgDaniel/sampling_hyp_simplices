@@ -26,6 +26,11 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
         }
 
+        public List<T> EdgesAsSet()
+        {
+            return Edges.Select(edge => edge.Item2).ToList();
+        }
+
         public RiemannianSpace AmbiantSpace { get; set; }
 
         public GenericSimplex(Tuple<int, T>[] edges)

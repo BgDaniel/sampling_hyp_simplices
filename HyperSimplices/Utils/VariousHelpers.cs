@@ -30,7 +30,7 @@ namespace HyperSimplices
         public static List<Vector<double>> CreateSimplexMesh(int meshSteps, int dim, double scale = 1.0)
         {
             var delta = 1.0 / meshSteps;
-            var deltas = Enumerable.Range(0, meshSteps + 1).Select(i => i * delta).ToArray();         
+            var deltas = Enumerable.Range(0, meshSteps).Select(i => i * delta).ToArray();         
             var meshPoints = new List<double[]>() { new double[dim] };
             List<double[]> meshPointsNew = null;
 
@@ -79,6 +79,32 @@ namespace HyperSimplices
             return ret;
         }
 
+        public static Vector<double> GetNormalVector(Simplex simplex)
+        {
+            if (simplex.Dim != simplex.DimAmbiantSpace - 1)
+                throw new ArgumentException($"Dimension of simplex must be of codimennsion one but is {simplex.DimAmbiantSpace - simplex.Dim}!");
+
+            var unitVectors = Enumerable.Range(0, simplex.DimAmbiantSpace).Select(iDim => {
+                double[] array_i = new double[simplex.DimAmbiantSpace];
+                array_i[iDim] = 1.0;
+                return Vector<double>.Build.DenseOfArray(array_i);
+            }).ToList(); 
+
+            foreach(var unitVector in unitVectors)
+            {
+                try
+                {
+                    return GetNormalVector(simplex, unitVector);
+                }
+                catch(Exception ex)
+                {
+
+                }
+            }
+
+            return null;
+        }
+
         public static Vector<double> GetNormalVector(Simplex simplex, Vector<double> b)
         {
             var A = Matrix<double>.Build.DenseOfColumnVectors(simplex.DirectionalVectors);
@@ -100,7 +126,25 @@ namespace HyperSimplices
 
         public static double Angle(Vector<double> a, Vector<double> b)
         {
-            return (a.DotProduct(b)) / (a.L2Norm() * b.L2Norm());
+            return Math.Acos((a.DotProduct(b)) / (a.L2Norm() * b.L2Norm()));
+        }
+
+        public static void WriteToFile(string filepath, List<Vector<double>> vectors)
+        {
+            var matrix = Matrix<double>.Build.DenseOfColumnVectors(vectors);
+
+            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filepath))
+            {
+                for (int i = 0; i < matrix.RowCount; i++)
+                {
+                    string outstr = "";
+                    for (int j = 0; j < matrix.ColumnCount; j++)
+                    {
+                        outstr += ";" + matrix.ToArray()[i, j];
+                    }
+                    sw.WriteLine(outstr);
+                }
+            }
         }
     }
 
