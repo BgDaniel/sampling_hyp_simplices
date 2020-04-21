@@ -29,7 +29,8 @@ namespace HyperSimplices.SimplicialGeometry.SimplexComplex
             var normal1 = VariousHelpers.GetNormalVector(Simplex1, vec1 - Simplex1.BasePoint);
             var normal2 = VariousHelpers.GetNormalVector(Simplex2, vec2 - Simplex2.BasePoint);
 
-            Angle = normal1.DotProduct(normal2) / (normal1.L2Norm() * normal2.L2Norm());
+            var commonBasePoint = CommonBase.BasePoint;
+            Angle = Math.PI - CommonBase.AmbiantSpace.Angle(commonBasePoint, normal1, normal2);
         }
 
         public SimplexPair(Simplex.Simplex commonBase, Simplex.Simplex simplex1, Simplex.Simplex simplex2)

@@ -64,16 +64,13 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 
             if(calcAnalytical)
             {   
-                if(AmbiantSpace.GetType() == typeof(BeltramiKlein))
+                if(AmbiantSpace.GetType() == typeof(BeltramiKlein2Dim))
                 {
-                    if (Dim == 1 || Dim == 2)
-                    {
-                        if (Dim == 1 && calcAnalytical)
-                            Volume = BeltramiKlein2Dim.Distance(this);
+                    if (Dim == 1)
+                        Volume = ((BeltramiKlein2Dim)AmbiantSpace).Distance(this);
 
-                        if (Dim == 2 && calcAnalytical)
-                            Volume = BeltramiKlein2Dim.Surface(this);
-                    }
+                    if (Dim == 2)
+                        Volume = ((BeltramiKlein2Dim)AmbiantSpace).Surface(this);
                 }
                 else if (AmbiantSpace.GetType() == typeof(EuclideanGeometry))
                 {

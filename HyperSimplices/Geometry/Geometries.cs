@@ -24,7 +24,12 @@ namespace HyperSimplices.Geometry
                 case CurvatureType.FLAT:
                     return new EuclideanGeometry(dim);
                 case CurvatureType.NEGATIVE:
-                    return new BeltramiKlein(dim);
+                    {
+                        if (dim == 2)
+                            return new BeltramiKlein2Dim();
+                        else
+                            return new BeltramiKlein(dim);
+                    }                    
                 case CurvatureType.POSITIVE:
                 default:
                     throw new NotSupportedException($"Curvature type {curvatureType} is not yet supported!");

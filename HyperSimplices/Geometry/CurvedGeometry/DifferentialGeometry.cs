@@ -44,7 +44,7 @@ namespace HyperSimplices.CurvedGeometry
             var g_vv = G(x, v, v);
             var g_ww = G(x, w, w);
 
-            return g_vw / (Math.Sqrt(g_vv * g_ww));
+            return Math.Acos(g_vw / (Math.Sqrt(g_vv * g_ww)));
         }
     }
 
