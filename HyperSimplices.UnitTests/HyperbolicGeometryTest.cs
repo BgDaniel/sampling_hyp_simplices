@@ -41,5 +41,16 @@ namespace HyperSimplices.UnitTests
                 }
             }
         }
+
+        [Test]
+        public void TestFastSimplex3D()
+        {
+            var simplex = new FastSimplex3D(new double[] { .0, .0, .0, .0 },
+                new double[] { .0, .5, .0, .0 },
+                new double[] { .0, .0, .5, .0 },
+                new double[] { .0, .0, .5, 1.0 });
+
+            simplex.Compute();
+        }
     }
 }

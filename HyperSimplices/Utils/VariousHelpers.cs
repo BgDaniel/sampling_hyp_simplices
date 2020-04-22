@@ -27,10 +27,10 @@ namespace HyperSimplices
             return ret;
         }
 
-        public static List<Vector<double>> CreateSimplexMesh(int meshSteps, int dim, double scale = 1.0)
+        public static List<double[]> CreateMesh(int meshSteps, int dim, double scale = 1.0)
         {
             var delta = 1.0 / meshSteps;
-            var deltas = Enumerable.Range(0, meshSteps).Select(i => i * delta).ToArray();         
+            var deltas = Enumerable.Range(0, meshSteps).Select(i => i * delta).ToArray();
             var meshPoints = new List<double[]>() { new double[dim] };
             List<double[]> meshPointsNew = null;
 
@@ -41,19 +41,19 @@ namespace HyperSimplices
                 foreach (var meshPoint in meshPoints)
                     meshPointsNew.AddRange(FillNextEntry(meshPoint, iDim, deltas));
 
-                meshPoints = meshPointsNew.CopyDoubleArrayList(); 
+                meshPoints = meshPointsNew.CopyDoubleArrayList();
             }
 
             var meshPointsFinal = new List<double[]>();
 
-            foreach(var meshPoint in meshPoints)
+            foreach (var meshPoint in meshPoints)
             {
                 if (meshPoint.Sum() <= 1.0)
                     meshPointsFinal.Add(meshPoint);
             }
 
-            return meshPointsFinal.Select(meshPt => Vector<double>.Build.DenseOfArray(meshPt)).ToList();
-        }   
+            return meshPointsFinal;
+        }  
         
         public static List<Vector<double>> RandomVectors(int nbSamples, int dim, double maxNorm = 1.0)
         {
@@ -145,6 +145,46 @@ namespace HyperSimplices
                     sw.WriteLine(outstr);
                 }
             }
+        }
+    }
+
+    public static class ArrayExtensions
+    {
+        public static double Norm(this double[] array)
+        {
+            return Math.Sqrt(Enumerable.Range(0, array.Length).Select(ell => array[ell] * array[ell]).Sum());
+        }
+
+        public static double Dot(this double[] array1, double[] array2)
+        {
+            return Enumerable.Range(0, array1.Length).Select(ell => array1[ell] * array2[ell]).Sum();
+        }
+
+        public static double[] Subtract(this double[] array1, double[] array2)
+        {
+            return Enumerable.Range(0, array1.Length).Select(ell => array1[ell] - array2[ell]).ToArray();
+        }
+
+        public static double[] Mult(this double[] array, double factor)
+        {
+            var arrayMult = new double[array.Length];
+
+            for (int ell = 0; ell < array.Length; ell++)
+                arrayMult[ell] = array[ell] * factor;
+
+            return arrayMult;
+        }
+
+        public static double[] Normal(this double[] array1, double[] array2)
+        {
+            var a1 = array1[0];
+            var a2 = array1[1];
+            var a3 = array1[2];
+            var b1 = array2[0];
+            var b2 = array2[1];
+            var b3 = array2[2];
+
+            return new double[3] { a2 * b3 - b2 * a3, a1 * b3 - b1 * a3, a1 * b2 - b1 * a2 };
         }
     }
 

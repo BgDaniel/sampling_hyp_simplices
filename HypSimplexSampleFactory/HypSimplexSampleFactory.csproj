@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="FileHelpers" Version="3.4.1" />
   </ItemGroup>
 
   <ItemGroup>

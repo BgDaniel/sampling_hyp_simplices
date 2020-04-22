@@ -39,6 +39,11 @@ namespace HyperSimplices.SampleGeneration
             CurvatureType = curvatureType;
         }
 
+        public List<FastSimplex3D> FastRandomSamples3D()
+        {
+            return FastSimplex3D.RandomSamples(NbSamples, MaxNorm);
+        }
+
         public (List<Simplex>, List<SimplexComplex>) RandomSamples()
         {
 

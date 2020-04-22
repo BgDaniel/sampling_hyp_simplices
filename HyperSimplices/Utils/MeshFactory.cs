@@ -26,12 +26,12 @@ namespace HyperSimplices.Utils
 
     public sealed class MeshFactory
     {
-        private Dictionary<MeshKey, List<Vector<double>>> _meshs;
+        private Dictionary<MeshKey, List<double[]>> _meshs;
         private static MeshFactory _instance;
 
         private MeshFactory() 
         {
-            _meshs = new Dictionary<MeshKey, List<Vector<double>>>();
+            _meshs = new Dictionary<MeshKey, List<double[]>>();
         }
 
         public static MeshFactory Instance
@@ -45,18 +45,18 @@ namespace HyperSimplices.Utils
             }
         }
 
-        public List<Vector<double>> GetMesh(int dim, int meshSteps)
+        public List<double[]> GetMesh(int dim, int meshSteps)
         {
             return GetMesh(new MeshKey(dim, meshSteps));
         }
 
-        public List<Vector<double>> GetMesh(MeshKey meshKey)
+        public List<double[]> GetMesh(MeshKey meshKey)
         {
             if (_meshs.ContainsKey(meshKey))
                 return _meshs[meshKey];
             else
             {
-                _meshs[meshKey] = VariousHelpers.CreateSimplexMesh(meshKey.MeshSteps, meshKey.Dim);
+                _meshs[meshKey] = VariousHelpers.CreateMesh(meshKey.MeshSteps, meshKey.Dim);
                 return _meshs[meshKey];
             }
         }

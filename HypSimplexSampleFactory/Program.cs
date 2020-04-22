@@ -1,8 +1,13 @@
 ﻿using CommandLine;
+using FileHelpers;
 using HyperSimplices.SampleGeneration;
+using HyperSimplices.SimplicialGeometry.Simplex;
 using HyperSimplices.Utils;
 using HypSimplexSampleFactory.CommandLineParser;
 using System;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace HypSimplexSampleFactory
 {
@@ -19,7 +24,19 @@ namespace HypSimplexSampleFactory
         private static void Execute(Options options)
         {
             Console.WriteLine(MessageAtStart(options));
+
+            var randomSimplices = FastSimplex3D.RandomSamples(options.NumberSamples);
+
+            foreach(var randomSimplex in randomSimplices)
+                randomSimplex.Compute();
             
+            var engine = new FileHelperEngine(typeof(FastSimplex3D));
+            engine.HeaderText = engine.GetFileHeader();
+            engine.WriteFile("C:\\Users\\bergerd\\simplices.csv", randomSimplices);
+
+
+
+            /*
             var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.Integrate, 
                 options.MeshSteps, options.MaxNorm, options.ZeroAmongEdges, options.ComputeAngles, options.ComputeAnalytical);
 
@@ -27,7 +44,8 @@ namespace HypSimplexSampleFactory
             sampleFactory.RaiseSampleCreatorEvent += progressBar.HandleSampleCreationEvent;
 
             Console.WriteLine(_computing);            
-            (var randomSimplices, var hyperRandomComplexes) = sampleFactory.RandomSamples();            
+            (var randomSimplices, var hyperRandomComplexes) = sampleFactory.RandomSamples();   
+            */
         }
 
         private static void Execute(string[] args)

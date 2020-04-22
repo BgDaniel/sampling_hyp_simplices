@@ -39,7 +39,7 @@ namespace HypSimplexSampleFactory.ExampleConfigs
 
         public static Options Hyper_4= new Options
         {
-            NumberSamples = 500,
+            NumberSamples = 10000,
             Dimension = 2,
             Integrate = true,
             MeshSteps = 500,

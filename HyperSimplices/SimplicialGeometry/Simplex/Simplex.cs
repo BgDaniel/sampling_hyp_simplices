@@ -83,8 +83,8 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                 Volume = .0;
                 var dVol = Math.Pow(1.0 / meshSteps, Dim);
 
-                foreach (var meshPoint in mesh)
-                    Volume += Trivialization.GramDeterminant(meshPoint) * dVol;
+                //foreach (var meshPoint in mesh)
+                //    Volume += Trivialization.GramDeterminant(meshPoint) * dVol;
             }
         }
 
