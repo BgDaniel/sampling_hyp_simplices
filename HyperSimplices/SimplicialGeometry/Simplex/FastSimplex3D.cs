@@ -3,6 +3,7 @@ using Aspose.Words.Fields;
 using FileHelpers;
 using HyperSimplices.Geometry.CurvedGeometry.GeometricMotions;
 using HyperSimplices.Utils;
+using MathNet.Numerics;
 using MathNet.Numerics.Integration;
 using MathNet.Numerics.LinearAlgebra;
 using System;
@@ -54,6 +55,13 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         public double AngleDAB;
         public double AngleDBC;
         public double AngleDAC;
+
+        public double AngleCABD;
+        public double AngleBACD;
+        public double AngleCADB;
+        public double AngleABCD;
+        public double AngleABDC;
+        public double AngleACDB;
 
         public FastSimplex3D()
         {
@@ -113,52 +121,69 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             AngleDAB = Angle("D", "A", "B");
             AngleDBC = Angle("D", "B", "C");
             AngleDAC = Angle("D", "A", "C");
+
+            AngleCABD = Angle("C", "A", "B", "D");
+            AngleBACD = Angle("B", "A", "C", "D");
+            AngleCADB = Angle("C", "A", "D", "B");
+            AngleABCD = Angle("A", "B", "C", "D");
+            AngleABDC = Angle("A", "B", "D", "C");
+            AngleACDB = Angle("A", "C", "D", "B");
         }
 
-        protected double[] FirstToZero(double[] B, double[] P)
+        protected double[] ToZero(double[] B, double[] P)
         {
             return GeometricMotions.MoveBToZeroInBeltramiKlein(B, P);
         }
 
-        protected double Vol(int meshSteps = 10000)
+        protected double Vol(int meshSteps = 2000)
         {
-            var __B = FirstToZero(m_A, m_B);
-            var __C = FirstToZero(m_A, m_C);
-            var __D = FirstToZero(m_A, m_D);
-            var span = Matrix<double>.Build.DenseOfColumnArrays(new List<double[]>() { __B, __C, __D});
+            var _P = m_A; 
+            var _V = m_B.Subtract(m_A);
+            var _W = m_C.Subtract(m_A);
+            var _U = m_D.Subtract(m_A);
+            var span = Matrix<double>.Build.DenseOfColumnArrays(new List<double[]>() { _V, _W, _U});
             var detSpan = span.Determinant();
-
-            Func<double, double, double, double> gramDet = (r, s, t) =>
-            {
-                var y = new double[3] { __B[0] * r + __C[0] * s + __D[0] * t,
-                                        __B[1] * r + __C[0] * s + __D[0] * t,
-                                        __B[0] * r + __C[0] * s + __D[0] * t };
-
-                var yNorm = y.Norm();
-                var yNormSq = yNorm * yNorm;
-
-                return 1.0 / ((1.0 - yNormSq) * (1.0 - yNormSq) * (1.0 - yNormSq));
-            };
-
-            var mesh = MeshFactory.Instance.GetMesh(3, meshSteps);            
-            var dVol = 1.0 / (meshSteps * meshSteps * meshSteps);
-
+            var _Y = new double[3];
+            var dt = 1.0 / (double)meshSteps;
             var volume = .0;
-            var meshPoints = MeshFactory.Instance.GetMesh(meshSteps, 3);
+            var counter = 0;
+            var aSixth = 1.0 / 6.0;
+            var fiveSixth = 5.0 / 6.0;
+            double weight;
 
-            foreach (var meshPoint in meshPoints)
-                volume += gramDet(meshPoint[0], meshPoint[1], meshPoint[2]) * dVol;
+            for(int _v = 0; _v < meshSteps; _v++)
+            {
+                for (int _w = 0; _w < meshSteps - _v; _w++)
+                {
+                    for (int _u = 0; _u < meshSteps - _w - _v; _u++)
+                    {
+                        weight = 1.0;
 
-            return volume;
+                        if (_u == meshSteps - _w - _v - 1)
+                            weight = aSixth;
+                        else if (_u == meshSteps - _w - _v - 2)
+                            weight = fiveSixth;
+
+                        for (int ell = 0; ell < 3; ell++)
+                            _Y[ell] = _P[ell] + (_v * _V[ell] + _w * _W[ell] + _u * _U[ell]) * dt;
+
+                        var yNormSq = _Y.Dot(_Y);
+                        volume += weight * (1.0 / ((1.0 - yNormSq) * (1.0 - yNormSq) * (1.0 - yNormSq)));
+                        counter++;                        
+                    }
+                }
+            }
+
+            return volume * Math.Sqrt(detSpan * detSpan) * dt * dt * dt;
         }
 
-        protected double Angle(double[] v, double[] w)
+        protected double Angle(double[] x, double[] v, double[] w)
         {
-            var vw = Enumerable.Range(0, v.Length).Select(ell => v[ell] * w[ell]).Sum();
-            var vv = Enumerable.Range(0, v.Length).Select(ell => v[ell] * v[ell]).Sum();
-            var ww = Enumerable.Range(0, v.Length).Select(ell => w[ell] * w[ell]).Sum();
+            var g_vv = G(x, v, v);
+            var g_vw = G(x, v, w);
+            var g_ww = G(x, w, w);
 
-            return Math.Acos(vw / Math.Sqrt(vv * ww));
+            return Math.Acos(g_vw / Math.Sqrt(g_vv * g_ww));
         }
 
         protected double Surface(String _P, String _Q, String _R)
@@ -166,31 +191,52 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return Math.PI - Angle(_P, _Q, _R) - Angle(_Q, _R, _P) - Angle(_R, _Q, _P);
         }
 
-        protected double Angle(String _B, String _Q, String _R)
+        protected double Angle(String Base, String Q, String R)
         {
-            var _base = GetPoint(_B);
-            var __Q = FirstToZero(_base, GetPoint(_Q));
-            var __R = FirstToZero(_base, GetPoint(_R));
-            return Angle(__Q, __R);
+            var _Base = GetPoint(Base);
+            var _Q = GetPoint(Q);
+            var _R = GetPoint(R);
+            var vecQ = _Q.Subtract(_Base);
+            var vecR = _R.Subtract(_Base);
+
+            return Angle(_Base, vecQ, vecR);
         }
 
-        protected double Angle(String _P, String _B, String _Q, String _S)
+        protected double Angle(String Base, String Q, String R, String S)
         {
-            var _base = GetPoint(_B);
-            var __P = FirstToZero(_base, GetPoint(_P));
-            var __Q = FirstToZero(_base, GetPoint(_Q));
-            var __S = FirstToZero(_base, GetPoint(_S));
+            var _Base = GetPoint(Base);
+            var _Q = GetPoint(Q);
+            var _R = GetPoint(R);
+            var _S = GetPoint(S);
+            var vecQ = _Q.Subtract(_Base);
+            var vecR = _R.Subtract(_Base);
+            var vecS = _S.Subtract(_Base);
 
-            var normalPQ = __P.Normal(__Q);
-            var normalPS = __P.Normal(__S);
-            return Angle(normalPQ, normalPS);
+            var normalBaseQR = Normal(_Base, vecQ, vecR);
+            var normalBaseQS = Normal(_Base, vecQ, vecS);
+            return Math.PI - Angle(_Base, normalBaseQR, normalBaseQS);
         }
 
-        public double Length(String _P, String _Q)
+        public double Length(String P, String Q)
         {
-            var __Q = FirstToZero(GetPoint(_P), GetPoint(_Q));
-            var r = __Q.Norm();
-            return Math.Atan(r);
+            var _P = Vector<double>.Build.DenseOfArray(GetPoint(P));
+            var _Q = Vector<double>.Build.DenseOfArray(GetPoint(Q));
+
+            Func<double, Vector<double>> line_pq = t => _P + (_Q - _P) * t;
+            Func<double, double> f = t => line_pq(t).L2Norm() - 1.0;
+
+            var t_A = FindRoots.OfFunction(f, -3.0 / (_P - _Q).L2Norm(), .0);
+            var t_B = FindRoots.OfFunction(f, 1.0, 3.0 / (_P - _Q).L2Norm());
+
+            var _A = line_pq(t_A);
+            var _B = line_pq(t_B);
+
+            var aq = (_A - _Q).L2Norm();
+            var ap = (_A - _P).L2Norm();
+            var pb = (_P - _B).L2Norm();
+            var qb = (_Q - _B).L2Norm();
+
+            return .5 * Math.Log((aq * pb) / (ap * qb));
         }
 
         public static List<FastSimplex3D> RandomSamples(int nbSamples, double maxNorm = 1.0)
@@ -206,6 +252,57 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
 
             return ret;
+        }
+
+        private double G(double[] x, double[] v, double[] w)
+        {
+            var xNorm = x.Norm();
+            var y = 1.0 - xNorm * xNorm;
+            var id = Matrix<double>.Build.DenseIdentity(3);
+            var X = Matrix<double>.Build.DenseOfColumnArrays(x);
+            var XT = X.Transpose();
+            var _vT = Matrix<double>.Build.DenseOfColumnArrays(v).Transpose();
+            var _w = Matrix<double>.Build.DenseOfColumnArrays(w);
+            
+            return (_vT * (id / y + X * XT / (y * y)) * _w).ToArray()[0,0];
+        }
+
+        private double[] Normal(double[] x, double[] v, double[] w)
+        {
+            var e_1 = new double[3];
+            e_1[0] = 1.0;
+            var e_2 = new double[3];
+            e_2[1] = 1.0;
+            var e_3 = new double[3];
+            e_1[2] = 1.0;
+
+            var e_i = new List<double[]>() { e_1, e_2, e_3 };
+            var A = Matrix<double>.Build.DenseOfColumnArrays(v, w);
+            Vector<double> normal = null;
+            var zero = Vector<double>.Build.DenseOfArray(new double[3]);
+
+            foreach (var e in e_i)
+            {
+                var _e = Vector<double>.Build.DenseOfArray(e);
+                var A_T = A.Transpose();
+                var AT_e = A_T * _e;
+                var AT_A = A_T * A;
+                var x_0 = AT_A.Solve(AT_e);
+                normal = _e - A * x_0;
+
+                if (normal.Equals(zero))
+                    continue;
+                else
+                    break;
+            }
+        
+            var cols = A.EnumerateColumns().ToList();
+            cols.Add(normal);
+            var AB = Matrix<double>.Build.DenseOfColumnVectors(cols);
+            var AB_T = AB.Transpose();
+            var sign = Math.Sign(AB_T.Determinant());
+
+            return (sign * normal / normal.L2Norm()).ToArray();
         }
     }
 }

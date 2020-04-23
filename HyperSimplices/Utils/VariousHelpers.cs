@@ -152,12 +152,22 @@ namespace HyperSimplices
     {
         public static double Norm(this double[] array)
         {
-            return Math.Sqrt(Enumerable.Range(0, array.Length).Select(ell => array[ell] * array[ell]).Sum());
+            var normSqr = .0;
+
+            for (int i = 0; i < array.Length; i++)
+                normSqr += array[i] * array[i];
+
+            return Math.Sqrt(normSqr);
         }
 
         public static double Dot(this double[] array1, double[] array2)
         {
-            return Enumerable.Range(0, array1.Length).Select(ell => array1[ell] * array2[ell]).Sum();
+            var dotProd = .0;
+
+            for (int i = 0; i < array1.Length; i++)
+                dotProd += array1[i] * array2[i];
+
+            return dotProd;
         }
 
         public static double[] Subtract(this double[] array1, double[] array2)
