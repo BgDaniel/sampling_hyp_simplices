@@ -1,19 +1,24 @@
 ﻿using CommandLine;
 using FileHelpers;
+using HyperSimplices;
 using HyperSimplices.SampleGeneration;
 using HyperSimplices.SimplicialGeometry.Simplex;
 using HyperSimplices.Utils;
 using HypSimplexSampleFactory.CommandLineParser;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 
 namespace HypSimplexSampleFactory
 {
     class Program
     {
         private static string _computing = "Generating random samples ...";
+        private static object _simplexLock = new object();
 
         static void Main(string[] args)
         {
@@ -26,16 +31,37 @@ namespace HypSimplexSampleFactory
             Console.WriteLine(MessageAtStart(options));
 
             var randomSimplices = FastSimplex3D.RandomSamples(options.NumberSamples);
-
-            foreach(var randomSimplex in randomSimplices)
-                randomSimplex.Compute();
+            var counter = 0;
+            var progressBar = new ProgressBar();
+            var nbThreads = 7;
+            var vols = new double[nbThreads];            
+            var path = "C:\\Users\\bergerd\\simplices.csv";
             
-            var engine = new FileHelperEngine(typeof(FastSimplex3D));
-            engine.HeaderText = engine.GetFileHeader();
-            engine.WriteFile("C:\\Users\\bergerd\\simplices.csv", randomSimplices);
+            if (File.Exists(path))
+                File.Delete(path);
 
+            var partition = VariousHelpers.GetPartition(options.NumberSamples, nbThreads);
 
+            Parallel.For(0, nbThreads, ell =>
+            {
+                for (int i = partition[ell][0]; i < partition[ell][1]; i++)
+                {
+                    var stopWatch = new Stopwatch();
+                    stopWatch.Start();
+                    randomSimplices[i].Compute(20);
+                    stopWatch.Stop();
+                    counter += 1;
+                    Debug.WriteLine($"Successfully generated {counter} random samples.");
 
+                    lock(_simplexLock)
+                    {
+                        progressBar.Report(counter, options.NumberSamples, stopWatch.Elapsed.TotalSeconds);
+                        VariousHelpers.SampleToFile(path, randomSimplices[i]);
+                    }                    
+                }
+            });
+
+                                                               
             /*
             var sampleFactory = new SampleFactory(options.NumberSamples, options.Dimension, options.Integrate, 
                 options.MeshSteps, options.MaxNorm, options.ZeroAmongEdges, options.ComputeAngles, options.ComputeAnalytical);

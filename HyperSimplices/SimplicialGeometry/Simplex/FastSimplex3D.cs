@@ -1,4 +1,6 @@
-﻿using Accord.Math.Integration;
+﻿//#define MULTITHREADS
+
+using Accord.Math.Integration;
 using Aspose.Words.Fields;
 using FileHelpers;
 using HyperSimplices.Geometry.CurvedGeometry.GeometricMotions;
@@ -14,6 +16,27 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices.SimplicialGeometry.Simplex
 {
+    public class Triangle
+    {
+        public double A { get; set; }
+        public double B { get; set; }
+        public double C { get; set; }
+        public double Alpha { get; set; }
+        public double Beta { get; set; }
+        public double Gamma { get; set; }
+
+
+        public Triangle(double a, double b, double c, double alpha, double beta, double gamma)
+        {
+            A = a;
+            B = b;
+            C = c;
+            Alpha = alpha;
+            Beta = beta;
+            Gamma = gamma;
+        }
+    }
+
     [DelimitedRecord(";")]
     public class FastSimplex3D
     {
@@ -28,6 +51,22 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 
         [FieldHidden]
         private double[] m_D;
+
+        [FieldHidden]
+        public Triangle ABC => new Triangle(LengthAB, LengthAC, LengthBC, AngleABC, AngleBAC, AngleCAB);
+
+        [FieldHidden]
+        public Triangle ABD => new Triangle(LengthAB, LengthAD, LengthBD, AngleABD, AngleBAD, AngleDAB);
+
+        [FieldHidden]
+        public Triangle ACD => new Triangle(LengthAC, LengthAD, LengthCD, AngleACD, AngleDAC, AngleCAD);
+
+        [FieldHidden]
+        public Triangle BCD => new Triangle(LengthBC, LengthBD, LengthCD, AngleBCD, AngleCBD, AngleDBC);
+
+        [FieldHidden]
+        public List<Triangle> Triangles => new List<Triangle>() { ABC, ABD, ACD, BCD };
+
 
         public double Volume;
 
@@ -93,9 +132,10 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             }
         }
 
-        public void Compute()
+        public void Compute(int meshSteps, bool computeVolume = true)
         {
-            Volume = Vol();
+            if(computeVolume)
+                Volume = Vol(meshSteps);
 
             SurfaceABC = Surface("A", "B", "C");
             SurfaceABD = Surface("A", "B", "D");
@@ -122,12 +162,12 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             AngleDBC = Angle("D", "B", "C");
             AngleDAC = Angle("D", "A", "C");
 
-            AngleCABD = Angle("C", "A", "B", "D");
-            AngleBACD = Angle("B", "A", "C", "D");
-            AngleCADB = Angle("C", "A", "D", "B");
-            AngleABCD = Angle("A", "B", "C", "D");
-            AngleABDC = Angle("A", "B", "D", "C");
-            AngleACDB = Angle("A", "C", "D", "B");
+            AngleCABD = Angle("A", "B", "C", "D");
+            AngleBACD = Angle("A", "C", "B", "D");
+            AngleCADB = Angle("A", "D", "B", "C");
+            AngleABCD = Angle("B", "C", "A", "D");
+            AngleABDC = Angle("B", "D", "A", "C");
+            AngleACDB = Angle("C", "D", "A", "B");
         }
 
         protected double[] ToZero(double[] B, double[] P)
@@ -135,7 +175,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return GeometricMotions.MoveBToZeroInBeltramiKlein(B, P);
         }
 
-        protected double Vol(int meshSteps = 2000)
+        protected double Vol(int meshSteps = 2500)
         {
             var _P = m_A; 
             var _V = m_B.Subtract(m_A);
@@ -146,17 +186,21 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             var dt = 1.0 / (double)meshSteps;
             var aSixth = 1.0 / 6.0;
             var fiveSixth = 5.0 / 6.0;
+
+
+#if MULTITHREADS
             var nbThreads = 4;
             var vols = new double[nbThreads];
 
-            var partition = Enumerable.Range(0, nbThreads).Select(ell => new int[2] 
-                {
-                    (int)(meshSteps * Math.Pow((double)(nbThreads - ell - 1) / (double)nbThreads, 1.0 / 3.0)),
-                    (int)(meshSteps * Math.Pow((double)(nbThreads - ell) / (double)nbThreads, 1.0 / 3.0))                    
-                }).ToArray();
+            var partition = VariousHelpers.GetPartition(meshSteps, nbThreads, 1.0 / 3.0);
 
             Parallel.For(0, nbThreads, ell =>
             {
+#else
+            var partition = new int[1][]{ new int[2] { 0, meshSteps } };
+                var vols = new double[1];
+                var ell = 0; 
+#endif
                 var volume = .0;
                 double weight;
                 var _Y = new double[3];
@@ -184,8 +228,10 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
                 }
 
                 vols[ell] = volume;
+#if MULTITHREADS
             });
-            
+#endif
+
             return vols.Sum() * Math.Sqrt(detSpan * detSpan) * dt * dt * dt;
         }
 
@@ -225,8 +271,8 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             var vecS = _S.Subtract(_Base);
 
             var normalBaseQR = Normal(_Base, vecQ, vecR);
-            var normalBaseQS = Normal(_Base, vecQ, vecS);
-            return Math.PI - Angle(_Base, normalBaseQR, normalBaseQS);
+            var normalBaseSQ = Normal(_Base, vecS, vecQ);
+            return Math.PI - Angle(_Base, normalBaseQR, normalBaseSQ);
         }
 
         public double Length(String P, String Q)

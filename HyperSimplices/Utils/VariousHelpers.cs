@@ -1,8 +1,10 @@
-﻿using HyperSimplices.SimplicialGeometry.Simplex;
+﻿using FileHelpers;
+using HyperSimplices.SimplicialGeometry.Simplex;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +18,7 @@ namespace HyperSimplices
             var ret = new List<double[]>();
             var arrLength = arr.Length;
 
-            for(int ell = 0; ell < values.Length; ell++)
+            for (int ell = 0; ell < values.Length; ell++)
             {
                 var newArr = new double[arrLength];
                 Array.Copy(arr, newArr, arrLength);
@@ -53,15 +55,15 @@ namespace HyperSimplices
             }
 
             return meshPointsFinal;
-        }  
-        
+        }
+
         public static List<Vector<double>> RandomVectors(int nbSamples, int dim, double maxNorm = 1.0)
         {
             var ret = new List<Vector<double>>();
             var counter = 0;
-            var continuousUniform = new ContinuousUniform(- maxNorm, + maxNorm);
+            var continuousUniform = new ContinuousUniform(-maxNorm, +maxNorm);
 
-            while(counter < nbSamples)
+            while (counter < nbSamples)
             {
                 var meetsCondition = false;
                 Vector<double> rndVector = null;
@@ -84,19 +86,20 @@ namespace HyperSimplices
             if (simplex.Dim != simplex.DimAmbiantSpace - 1)
                 throw new ArgumentException($"Dimension of simplex must be of codimennsion one but is {simplex.DimAmbiantSpace - simplex.Dim}!");
 
-            var unitVectors = Enumerable.Range(0, simplex.DimAmbiantSpace).Select(iDim => {
+            var unitVectors = Enumerable.Range(0, simplex.DimAmbiantSpace).Select(iDim =>
+            {
                 double[] array_i = new double[simplex.DimAmbiantSpace];
                 array_i[iDim] = 1.0;
                 return Vector<double>.Build.DenseOfArray(array_i);
-            }).ToList(); 
+            }).ToList();
 
-            foreach(var unitVector in unitVectors)
+            foreach (var unitVector in unitVectors)
             {
                 try
                 {
                     return GetNormalVector(simplex, unitVector);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
 
                 }
@@ -145,6 +148,31 @@ namespace HyperSimplices
                     sw.WriteLine(outstr);
                 }
             }
+        }
+
+        public static void SampleToFile(string path, FastSimplex3D sample)
+        {
+            var engine = new FileHelperEngine(typeof(FastSimplex3D));
+            var samples = new List<FastSimplex3D>() { sample };
+
+            if (File.Exists(path))
+                engine.AppendToFile(path, sample);
+            else
+            {
+                engine.HeaderText = engine.GetFileHeader();
+                engine.WriteFile("C:\\Users\\bergerd\\simplices.csv", new List<FastSimplex3D>() { sample });
+            }
+        }
+
+        public static int[][] GetPartition(int nbSteps, int nbThreads, double pow = 1.0)
+        {
+            var partition = Enumerable.Range(0, nbThreads).Select(ell => new int[2]
+                {
+                    (int)(nbSteps * Math.Pow((double)(nbThreads - ell - 1) / (double)nbThreads, pow)),
+                    (int)(nbSteps * Math.Pow((double)(nbThreads - ell) / (double)nbThreads, pow))
+                            }).ToArray();
+
+            return partition;
         }
     }
 

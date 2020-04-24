@@ -52,7 +52,7 @@ namespace HyperSimplices.Utils
             var averageTimePerStep = _elapsedSecondsPerIteration.Average();
             var estimatedRemaingTime = TimeSpan.FromSeconds(((double)totalIterations - (double)performedIterations) 
                 * averageTimePerStep);
-            return estimatedRemaingTime.ToString(@"mm\:ss");
+            return estimatedRemaingTime.ToString(@"dd\:hh\:mm\:ss");
         }
 
         public void Report(int performedIterations, int totalIterations, double elapsedTime)
