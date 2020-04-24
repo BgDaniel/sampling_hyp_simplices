@@ -326,7 +326,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return Normal(_Base, vecQ, vecR); ;
         }
 
-        protected double Angle(String Base, String Q, String R, String S)
+        public double Angle(String Base, String Q, String R, String S)
         {
             var _Base = GetPoint(Base);
             var normalBaseQR = NormalOnFace(Base, Q, R);

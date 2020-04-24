@@ -12,9 +12,9 @@ namespace HyperSimplices.UnitTests
     [TestClass]
     public class TestFastSimplex3D
     {
-        public const int NUMBER_SAMPLES = 5000;
+        public const int NUMBER_SAMPLES = 50000;
         public const double MAX_NORM = 2.0;
-        public const double TOLERANCE = 10e-5;
+        public const double TOLERANCE = 10e-7;
         public const int MESH_STEPS = 2500;
 
         public delegate double TrigonometricRelation(Triangle triangle);
@@ -110,7 +110,7 @@ namespace HyperSimplices.UnitTests
         }
 
         [Test]
-        public void TestAngleBetweenFaces()
+        public void TestAngleBetweenFacesI()
         {
             var randomSimplices = Simplex3D.RandomSamples(NUMBER_SAMPLES);
 
@@ -132,6 +132,37 @@ namespace HyperSimplices.UnitTests
         }
 
         [Test]
+        public void TestAngleBetweenFacesII()
+        {
+            var randomSimplices = Simplex3D.RandomSamples(NUMBER_SAMPLES);
+
+            foreach (var randomSimplex in randomSimplices)
+            {
+                var normalABCD = randomSimplex.Angle("A", "B", "C", "D");
+                var normalBACD = randomSimplex.Angle("B", "A", "C", "D");
+                var normalABDC = randomSimplex.Angle("A", "B", "D", "C");
+                var normalBADC = randomSimplex.Angle("B", "A", "D", "C");
+
+                if (Math.Abs(normalABCD - normalBACD) >= TOLERANCE)
+                    throw new Exception($"Deviation to high!");
+
+                if (Math.Abs(normalABCD - normalABDC) >= TOLERANCE)
+                    throw new Exception($"Deviation to high!");
+
+                if (Math.Abs(normalABCD - normalBADC) >= TOLERANCE)
+                    throw new Exception($"Deviation to high!");
+
+                if (Math.Abs(normalBACD - normalABDC) >= TOLERANCE)
+                    throw new Exception($"Deviation to high!");
+
+                if (Math.Abs(normalBACD - normalBADC) >= TOLERANCE)
+                    throw new Exception($"Deviation to high!");
+
+                if (Math.Abs(normalABDC - normalBADC) >= TOLERANCE)
+                    throw new Exception($"Deviation to high!");
+            }
+        }
+
         public void TestSurfacesComputation()
         {
             var randomSimplices = Simplex3D.RandomSamples(NUMBER_SAMPLES);

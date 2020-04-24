@@ -48,7 +48,7 @@ namespace HypSimplexSampleFactory
                 {
                     var stopWatch = new Stopwatch();
                     stopWatch.Start();
-                    randomSimplices[i].Compute(2500);
+                    randomSimplices[i].Compute(3000);
                     stopWatch.Stop();
                     counter += 1;
                     Debug.WriteLine($"Successfully generated {counter} random samples.");
