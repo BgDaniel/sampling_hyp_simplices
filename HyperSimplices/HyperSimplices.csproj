@@ -108,7 +108,7 @@
     <Compile Include="SampleGeneration\SampleFactory.cs" />
     <Compile Include="SimplicialGeometry\Simplex\Simplex.cs" />
     <Compile Include="SimplicialGeometry\SimplexComplex\SimplexComplex.cs" />
-    <Compile Include="SimplicialGeometry\Simplex\FastSimplex3D.cs" />
+    <Compile Include="SimplicialGeometry\Simplex\Simplex3D.cs" />
     <Compile Include="Utils\Permutations.cs" />
     <Compile Include="Utils\ProgressBar.cs" />
     <Compile Include="Utils\VariousHelpers.cs" />

@@ -150,17 +150,17 @@ namespace HyperSimplices
             }
         }
 
-        public static void SampleToFile(string path, FastSimplex3D sample)
+        public static void SampleToFile(string path, Simplex3D sample)
         {
-            var engine = new FileHelperEngine(typeof(FastSimplex3D));
-            var samples = new List<FastSimplex3D>() { sample };
+            var engine = new FileHelperEngine(typeof(Simplex3D));
+            var samples = new List<Simplex3D>() { sample };
 
             if (File.Exists(path))
                 engine.AppendToFile(path, sample);
             else
             {
                 engine.HeaderText = engine.GetFileHeader();
-                engine.WriteFile("C:\\Users\\bergerd\\simplices.csv", new List<FastSimplex3D>() { sample });
+                engine.WriteFile("C:\\Users\\bergerd\\simplices.csv", new List<Simplex3D>() { sample });
             }
         }
 

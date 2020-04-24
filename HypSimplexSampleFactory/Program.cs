@@ -30,7 +30,7 @@ namespace HypSimplexSampleFactory
         {
             Console.WriteLine(MessageAtStart(options));
 
-            var randomSimplices = FastSimplex3D.RandomSamples(options.NumberSamples);
+            var randomSimplices = Simplex3D.RandomSamples(options.NumberSamples);
             var counter = 0;
             var progressBar = new ProgressBar();
             var nbThreads = 7;

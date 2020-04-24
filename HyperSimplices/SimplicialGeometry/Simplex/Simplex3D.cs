@@ -38,7 +38,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
     }
 
     [DelimitedRecord(";")]
-    public class FastSimplex3D
+    public class Simplex3D
     {
         [FieldHidden]
         private double[] m_A;
@@ -102,12 +102,12 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         public double AngleABDC;
         public double AngleACDB;
 
-        public FastSimplex3D()
+        public Simplex3D()
         {
 
         }
 
-        public FastSimplex3D(double[] A, double[] B, double[] C, double[] D)
+        public Simplex3D(double[] A, double[] B, double[] C, double[] D)
         {
             m_A = A;
             m_B = B;
@@ -170,11 +170,6 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             AngleACDB = Angle("C", "D", "A", "B");
         }
 
-        protected double[] ToZero(double[] B, double[] P)
-        {
-            return GeometricMotions.MoveBToZeroInBeltramiKlein(B, P);
-        }
-
         protected double Vol(int meshSteps = 2500)
         {
             var _P = m_A; 
@@ -233,6 +228,66 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 #endif
 
             return vols.Sum() * Math.Sqrt(detSpan * detSpan) * dt * dt * dt;
+        }
+
+        protected double SurfaceNumeric(String Base, String Q, String R, int meshSteps = 2500)
+        {
+            var _Base = Vector<double>.Build.DenseOfArray(GetPoint(Base));
+            var _Q = Vector<double>.Build.DenseOfArray(GetPoint(Q));
+            var _R = Vector<double>.Build.DenseOfArray(GetPoint(R));
+            var _V = _Q - _Base;
+            var _W = _R - _Base;            
+            var span = Matrix<double>.Build.DenseOfColumnVectors(new List<Vector<double>>() { _V, _W });
+            var spanT = span.Transpose();
+            var spanTspan = spanT * span;
+            var dt = 1.0 / (double)meshSteps;
+            var surface = .0;
+            var weight = 1.0;
+
+            for (int _v = 0; _v < meshSteps; _v++)
+            {
+                for (int _w = 0; _w < meshSteps - _v; _w++)
+                {
+                    if (_w == meshSteps - _v - 1)
+                        weight = .5;
+
+                    var _X = Vector<double>.Build.DenseOfArray(new double[2] { _v * dt, _w * dt });
+                    var _Y = _Base + span * _X;
+                    var __Y = Matrix<double>.Build.DenseOfRowVectors(new List<Vector<double>>() { _Y });
+                    var __YT = __Y.Transpose();
+                    var _G = spanTspan / (1.0 - _Y.L2Norm() * _Y.L2Norm())
+                        + spanT * __YT * __Y * span / ((1.0 - _Y.L2Norm() * _Y.L2Norm()) * (1.0 - _Y.L2Norm() * _Y.L2Norm()));
+                    var gramDet = _G.Determinant();
+                    surface += weight * gramDet * dt * dt;
+                }
+            }
+
+            return surface;
+        }
+
+        protected double LengthNumeric(String Base, String Q, int meshSteps = 2500)
+        {
+            var _Base = Vector<double>.Build.DenseOfArray(GetPoint(Base));
+            var _Q = Vector<double>.Build.DenseOfArray(GetPoint(Q));
+            var _V = _Q - _Base;
+            var span = Matrix<double>.Build.DenseOfColumnVectors(new List<Vector<double>>() { _V });
+            var spanT = span.Transpose();
+            var spanTspan = spanT * span;
+            var dt = 1.0 / (double)meshSteps;
+            var length = .0;
+
+            for (int _v = 0; _v < meshSteps; _v++)
+            {
+                var _Y = _Base + _V * _v * dt;
+                var __Y = Matrix<double>.Build.DenseOfRowVectors(new List<Vector<double>>() { _Y });
+                var __YT = __Y.Transpose();
+                var _G = spanTspan / (1.0 - _Y.L2Norm() * _Y.L2Norm())
+                    + spanT * __YT * __Y * span / ((1.0 - _Y.L2Norm() * _Y.L2Norm()) * (1.0 - _Y.L2Norm() * _Y.L2Norm()));
+                var gramDet = _G.Determinant();
+                length += gramDet * dt;
+            }
+
+            return length;
         }
 
         protected double Angle(double[] x, double[] v, double[] w)
@@ -297,15 +352,15 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return .5 * Math.Log((aq * pb) / (ap * qb));
         }
 
-        public static List<FastSimplex3D> RandomSamples(int nbSamples, double maxNorm = 1.0)
+        public static List<Simplex3D> RandomSamples(int nbSamples, double maxNorm = 1.0)
         {
             var maxHyperbolicNorm = Math.Tanh(maxNorm);
             var rndVectors = VariousHelpers.RandomVectors(nbSamples * 4, 3, maxHyperbolicNorm);
-            var ret = new List<FastSimplex3D>();
+            var ret = new List<Simplex3D>();
 
             for (int i = 0; i < nbSamples; i++)
             {
-                ret.Add(new FastSimplex3D(rndVectors[4 * i].ToArray(), rndVectors[4 * i + 1].ToArray(), 
+                ret.Add(new Simplex3D(rndVectors[4 * i].ToArray(), rndVectors[4 * i + 1].ToArray(), 
                     rndVectors[4 * i + 2].ToArray(), rndVectors[4 * i + 3].ToArray()));
             }
 
@@ -361,6 +416,12 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             var sign = Math.Sign(AB_T.Determinant());
 
             return (sign * normal / normal.L2Norm()).ToArray();
+        }
+
+        public static Simplex3D GetStandardSimplex()
+        {
+            return new Simplex3D(new double[3] { .0, .0, .0 }, new double[3] { .5, .0, .0 }, 
+                new double[3] { .0, .5, .0 }, new double[3] { .0, .0, .5 });
         }
     }
 }
