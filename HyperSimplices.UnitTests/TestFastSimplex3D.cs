@@ -68,7 +68,7 @@ namespace HyperSimplices.UnitTests
             var standardSimplex = Simplex3D.GetStandardSimplex();
             standardSimplex.Compute(MESH_STEPS, false);
 
-            var trianlges = randomSimplex.Triangles;
+            var trianlges = standardSimplex.Triangles;
 
             foreach (var triangle in trianlges)
             {
