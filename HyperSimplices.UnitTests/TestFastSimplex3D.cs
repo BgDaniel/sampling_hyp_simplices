@@ -110,6 +110,28 @@ namespace HyperSimplices.UnitTests
         }
 
         [Test]
+        public void TestAngleBetweenFaces()
+        {
+            var randomSimplices = Simplex3D.RandomSamples(NUMBER_SAMPLES);
+
+            foreach (var randomSimplex in randomSimplices)
+            {
+                var normalABC = randomSimplex.NormalOnFace("A", "B", "C");
+                var normalABD = randomSimplex.NormalOnFace("A", "D", "B");
+                var A = randomSimplex.GetPoint("A");
+                var angleA = Math.PI - Simplex3D.Angle(A, normalABC, normalABD);
+
+                var normalBCA = randomSimplex.NormalOnFace("B", "C", "A");
+                var normalBAD = randomSimplex.NormalOnFace("B", "A", "D");
+                var B = randomSimplex.GetPoint("B");
+                var angleB = Math.PI - Simplex3D.Angle(B, normalBCA, normalBAD);
+
+                if (Math.Abs(angleA - angleB) >= TOLERANCE)
+                    throw new Exception($"Deviation to high!");
+            }
+        }
+
+        [Test]
         public void TestSurfacesComputation()
         {
             var randomSimplices = Simplex3D.RandomSamples(NUMBER_SAMPLES);

@@ -115,7 +115,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             m_D = D;
         }
 
-        protected double[] GetPoint(String P)
+        public double[] GetPoint(String P)
         {
             switch(P)
             {
@@ -290,7 +290,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return length;
         }
 
-        protected double Angle(double[] x, double[] v, double[] w)
+        public static double Angle(double[] x, double[] v, double[] w)
         {
             var g_vv = G(x, v, v);
             var g_vw = G(x, v, w);
@@ -315,7 +315,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return Angle(_Base, vecQ, vecR);
         }
 
-        protected double[] NormalOnFace(String Base, String Q, String R)
+        public double[] NormalOnFace(String Base, String Q, String R)
         {
             var _Base = GetPoint(Base);
             var _Q = GetPoint(Q);
@@ -371,7 +371,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return ret;
         }
 
-        private double G(double[] x, double[] v, double[] w)
+        private static double G(double[] x, double[] v, double[] w)
         {
             var _vT = Matrix<double>.Build.DenseOfColumnArrays(v).Transpose();
             var _w = Matrix<double>.Build.DenseOfColumnArrays(w);
@@ -379,7 +379,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return (_vT * G(x) * _w).ToArray()[0,0];
         }
 
-        private Matrix<double> G(double[] x)
+        private static Matrix<double> G(double[] x)
         {
             var xNorm = x.Norm();
             var y = 1.0 - xNorm * xNorm;
