@@ -108,5 +108,30 @@ namespace HyperSimplices.UnitTests
                 }
             }
         }
+
+        [Test]
+        public void TestSurfacesComputation()
+        {
+            var randomSimplices = Simplex3D.RandomSamples(NUMBER_SAMPLES);
+
+            foreach (var randomSimplex in randomSimplices)
+            {
+                randomSimplex.Compute(MESH_STEPS, false);
+                var trianlges = randomSimplex.Triangles;
+
+                foreach (var triangle in trianlges)
+                {
+                    var trigonometricRelations = Relations();
+
+                    foreach (var trigonometricRelation in trigonometricRelations)
+                    {
+                        var deviation = Math.Abs(trigonometricRelation(triangle) - .0);
+
+                        if (deviation >= TOLERANCE)
+                            throw new Exception($"Deviation to high!");
+                    }
+                }
+            }
+        }
     }
 }

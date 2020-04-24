@@ -24,7 +24,7 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         public double Alpha { get; set; }
         public double Beta { get; set; }
         public double Gamma { get; set; }
-
+        public double Surface { get; set; }
 
         public Triangle(double a, double b, double c, double alpha, double beta, double gamma)
         {
@@ -95,12 +95,12 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         public double AngleDBC;
         public double AngleDAC;
 
-        public double AngleCABD;
-        public double AngleBACD;
-        public double AngleCADB;
         public double AngleABCD;
-        public double AngleABDC;
-        public double AngleACDB;
+        public double AngleACBD;
+        public double AngleADBC;
+        public double AngleBCAD;
+        public double AngleBDAC;
+        public double AngleCDAB;
 
         public Simplex3D()
         {
@@ -162,12 +162,12 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             AngleDBC = Angle("D", "B", "C");
             AngleDAC = Angle("D", "A", "C");
 
-            AngleCABD = Angle("A", "B", "C", "D");
-            AngleBACD = Angle("A", "C", "B", "D");
-            AngleCADB = Angle("A", "D", "B", "C");
-            AngleABCD = Angle("B", "C", "A", "D");
-            AngleABDC = Angle("B", "D", "A", "C");
-            AngleACDB = Angle("C", "D", "A", "B");
+            AngleABCD = Angle("A", "B", "C", "D");
+            AngleACBD = Angle("A", "C", "B", "D");
+            AngleADBC = Angle("A", "D", "B", "C");
+            AngleBCAD = Angle("B", "C", "A", "D");
+            AngleBDAC = Angle("B", "D", "A", "C");
+            AngleCDAB = Angle("C", "D", "A", "B");
         }
 
         protected double Vol(int meshSteps = 2500)
