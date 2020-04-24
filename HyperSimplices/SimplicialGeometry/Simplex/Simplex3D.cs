@@ -53,16 +53,16 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         private double[] m_D;
 
         [FieldHidden]
-        public Triangle ABC => new Triangle(LengthAB, LengthAC, LengthBC, AngleABC, AngleBAC, AngleCAB);
+        public Triangle ABC => new Triangle(LengthBC, LengthAC, LengthAB, AngleABC, AngleBAC, AngleCAB);
 
         [FieldHidden]
-        public Triangle ABD => new Triangle(LengthAB, LengthAD, LengthBD, AngleABD, AngleBAD, AngleDAB);
+        public Triangle ABD => new Triangle(LengthAB, LengthAD, LengthBD, AngleDAB, AngleBAD, AngleABD);
 
         [FieldHidden]
-        public Triangle ACD => new Triangle(LengthAC, LengthAD, LengthCD, AngleACD, AngleDAC, AngleCAD);
+        public Triangle ACD => new Triangle(LengthAC, LengthAD, LengthCD, AngleDAC, AngleCAD, AngleACD);
 
         [FieldHidden]
-        public Triangle BCD => new Triangle(LengthBC, LengthBD, LengthCD, AngleBCD, AngleCBD, AngleDBC);
+        public Triangle BCD => new Triangle(LengthBC, LengthBD, LengthCD, AngleDBC, AngleCBD, AngleBCD);
 
         [FieldHidden]
         public List<Triangle> Triangles => new List<Triangle>() { ABC, ABD, ACD, BCD };
