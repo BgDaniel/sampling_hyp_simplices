@@ -315,18 +315,22 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             return Angle(_Base, vecQ, vecR);
         }
 
-        protected double Angle(String Base, String Q, String R, String S)
+        protected double[] NormalOnFace(String Base, String Q, String R)
         {
             var _Base = GetPoint(Base);
             var _Q = GetPoint(Q);
             var _R = GetPoint(R);
-            var _S = GetPoint(S);
             var vecQ = _Q.Subtract(_Base);
             var vecR = _R.Subtract(_Base);
-            var vecS = _S.Subtract(_Base);
 
-            var normalBaseQR = Normal(_Base, vecQ, vecR);
-            var normalBaseSQ = Normal(_Base, vecS, vecQ);
+            return Normal(_Base, vecQ, vecR); ;
+        }
+
+        protected double Angle(String Base, String Q, String R, String S)
+        {
+            var _Base = GetPoint(Base);
+            var normalBaseQR = NormalOnFace(Base, Q, R);
+            var normalBaseSQ = NormalOnFace(Base, S, Q);
             return Math.PI - Angle(_Base, normalBaseQR, normalBaseSQ);
         }
 
@@ -369,15 +373,21 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
 
         private double G(double[] x, double[] v, double[] w)
         {
+            var _vT = Matrix<double>.Build.DenseOfColumnArrays(v).Transpose();
+            var _w = Matrix<double>.Build.DenseOfColumnArrays(w);
+            
+            return (_vT * G(x) * _w).ToArray()[0,0];
+        }
+
+        private Matrix<double> G(double[] x)
+        {
             var xNorm = x.Norm();
             var y = 1.0 - xNorm * xNorm;
             var id = Matrix<double>.Build.DenseIdentity(3);
             var X = Matrix<double>.Build.DenseOfColumnArrays(x);
             var XT = X.Transpose();
-            var _vT = Matrix<double>.Build.DenseOfColumnArrays(v).Transpose();
-            var _w = Matrix<double>.Build.DenseOfColumnArrays(w);
-            
-            return (_vT * (id / y + X * XT / (y * y)) * _w).ToArray()[0,0];
+
+            return id / y + X * XT / (y * y);
         }
 
         private double[] Normal(double[] x, double[] v, double[] w)
@@ -398,9 +408,9 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             {
                 var _e = Vector<double>.Build.DenseOfArray(e);
                 var A_T = A.Transpose();
-                var AT_e = A_T * _e;
-                var AT_A = A_T * A;
-                var x_0 = AT_A.Solve(AT_e);
+                var AT_G_e = A_T * G(x) * _e;
+                var AT_G_A = A_T * G(x) * A;
+                var x_0 = AT_G_A.Solve(AT_G_e);
                 normal = _e - A * x_0;
 
                 if (normal.Equals(zero))
