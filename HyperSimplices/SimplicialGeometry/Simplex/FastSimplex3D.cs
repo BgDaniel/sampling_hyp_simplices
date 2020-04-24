@@ -142,39 +142,51 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
             var _W = m_C.Subtract(m_A);
             var _U = m_D.Subtract(m_A);
             var span = Matrix<double>.Build.DenseOfColumnArrays(new List<double[]>() { _V, _W, _U});
-            var detSpan = span.Determinant();
-            var _Y = new double[3];
+            var detSpan = span.Determinant();            
             var dt = 1.0 / (double)meshSteps;
-            var volume = .0;
-            var counter = 0;
             var aSixth = 1.0 / 6.0;
             var fiveSixth = 5.0 / 6.0;
-            double weight;
+            var nbThreads = 4;
+            var vols = new double[nbThreads];
 
-            for(int _v = 0; _v < meshSteps; _v++)
-            {
-                for (int _w = 0; _w < meshSteps - _v; _w++)
+            var partition = Enumerable.Range(0, nbThreads).Select(ell => new int[2] 
                 {
-                    for (int _u = 0; _u < meshSteps - _w - _v; _u++)
+                    (int)(meshSteps * Math.Pow((double)(nbThreads - ell - 1) / (double)nbThreads, 1.0 / 3.0)),
+                    (int)(meshSteps * Math.Pow((double)(nbThreads - ell) / (double)nbThreads, 1.0 / 3.0))                    
+                }).ToArray();
+
+            Parallel.For(0, nbThreads, ell =>
+            {
+                var volume = .0;
+                double weight;
+                var _Y = new double[3];
+
+                for (int _v = partition[ell][0]; _v < partition[ell][1]; _v++)
+                {
+                    for (int _w = 0; _w < meshSteps - _v; _w++)
                     {
-                        weight = 1.0;
+                        for (int _u = 0; _u < meshSteps - _w - _v; _u++)
+                        {
+                            weight = 1.0;
 
-                        if (_u == meshSteps - _w - _v - 1)
-                            weight = aSixth;
-                        else if (_u == meshSteps - _w - _v - 2)
-                            weight = fiveSixth;
+                            if (_u == meshSteps - _w - _v - 1)
+                                weight = aSixth;
+                            else if (_u == meshSteps - _w - _v - 2)
+                                weight = fiveSixth;
 
-                        for (int ell = 0; ell < 3; ell++)
-                            _Y[ell] = _P[ell] + (_v * _V[ell] + _w * _W[ell] + _u * _U[ell]) * dt;
+                            for (int ekk = 0; ekk < 3; ekk++)
+                                _Y[ekk] = _P[ekk] + (_v * _V[ekk] + _w * _W[ekk] + _u * _U[ekk]) * dt;
 
-                        var yNormSq = _Y.Dot(_Y);
-                        volume += weight * (1.0 / ((1.0 - yNormSq) * (1.0 - yNormSq) * (1.0 - yNormSq)));
-                        counter++;                        
+                            var yNormSq = _Y.Dot(_Y);
+                            volume += weight * (1.0 / ((1.0 - yNormSq) * (1.0 - yNormSq) * (1.0 - yNormSq)));
+                        }
                     }
                 }
-            }
 
-            return volume * Math.Sqrt(detSpan * detSpan) * dt * dt * dt;
+                vols[ell] = volume;
+            });
+            
+            return vols.Sum() * Math.Sqrt(detSpan * detSpan) * dt * dt * dt;
         }
 
         protected double Angle(double[] x, double[] v, double[] w)
