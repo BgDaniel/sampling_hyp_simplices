@@ -1,5 +1,6 @@
 ﻿using FileHelpers;
 using HyperSimplices.SimplicialGeometry.Simplex;
+using HyperSimplices.SimplicialGeometry.Triangle;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using System;
@@ -161,6 +162,20 @@ namespace HyperSimplices
             {
                 engine.HeaderText = engine.GetFileHeader();
                 engine.WriteFile("C:\\Users\\bergerd\\simplices.csv", new List<Simplex3D>() { sample });
+            }
+        }
+
+        public static void SampleToFile(string path, ShearTriangle2D sample)
+        {
+            var engine = new FileHelperEngine(typeof(ShearTriangle2D));
+            var samples = new List<ShearTriangle2D>() { sample };
+
+            if (File.Exists(path))
+                engine.AppendToFile(path, sample);
+            else
+            {
+                engine.HeaderText = engine.GetFileHeader();
+                engine.WriteFile("C:\\Users\\bergerd\\simplices.csv", new List<ShearTriangle2D>() { sample });
             }
         }
 

@@ -29,8 +29,11 @@ namespace HypSimplexSampleFactory
 
         private static void Execute(Options options)
         {
-            var samples = ShearTriangle2D.RandomSamples(1000);
+            var path = "C:\\Users\\bergerd\\simplices.csv";
 
+            var samples = ShearTriangle2D.RandomSamples(50000);
+            foreach(var sample in samples)
+                VariousHelpers.SampleToFile(path, sample);            
 
 
             Console.WriteLine(MessageAtStart(options));
@@ -39,8 +42,7 @@ namespace HypSimplexSampleFactory
             var counter = 0;
             var progressBar = new ProgressBar();
             var nbThreads = 7;
-            var vols = new double[nbThreads];            
-            var path = "C:\\Users\\bergerd\\simplices.csv";
+            var vols = new double[nbThreads];                        
             
             if (File.Exists(path))
                 File.Delete(path);
