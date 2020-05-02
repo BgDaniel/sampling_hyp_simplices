@@ -2,8 +2,8 @@
 using FileHelpers;
 using HyperSimplices;
 using HyperSimplices.SampleGeneration;
+using HyperSimplices.SimplicialGeometry.ShearMapping;
 using HyperSimplices.SimplicialGeometry.Simplex;
-using HyperSimplices.SimplicialGeometry.Triangle;
 using HyperSimplices.Utils;
 using HypSimplexSampleFactory.CommandLineParser;
 using System;
@@ -32,8 +32,8 @@ namespace HypSimplexSampleFactory
             var path = "C:\\Users\\bergerd\\simplices.csv";
 
             var samples = ShearTriangle2D.RandomSamples(50000);
-            foreach(var sample in samples)
-                VariousHelpers.SampleToFile(path, sample);            
+            //foreach(var sample in samples)
+            //    VariousHelpers.SampleToFile(path, sample);            
 
 
             Console.WriteLine(MessageAtStart(options));

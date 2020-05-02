@@ -1,4 +1,5 @@
 ﻿using HyperSimplices.Geometry;
+using HyperSimplices.SimplicialGeometry.ShearMapping;
 using HyperSimplices.SimplicialGeometry.Simplex;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
@@ -13,9 +14,9 @@ namespace HyperSimplices.UnitTests
     [TestClass]
     public class HyperbolicGeometryTest
     {
-        public const int NUMBER_SAMPLES = 5000;
+        public const int NUMBER_SAMPLES = 50000;
         public const double MAX_NORM = 2.0;
-        public const double TOLERANCE = 10e-5;
+        public const double TOLERANCE = 10e-7;
         public const int MESH_STEPS = 2500;
 
         [Test]
@@ -41,6 +42,29 @@ namespace HyperSimplices.UnitTests
                     counter++;
                 }
             }
-        }        
+        }
+
+        [Test]
+        public void TestTriangles()
+        {
+            var randomSamples = ShearTriangle2D.RandomSamples(NUMBER_SAMPLES);
+            var counter = 0;
+            var path = "C:\\Users\\bergerd\\simplices.csv";
+
+            foreach (var triangle in randomSamples)
+            {
+                var trigonometricRelations = TestFastSimplex3D.Relations();
+
+                foreach (var trigonometricRelation in trigonometricRelations)
+                {
+                    var deviation = Math.Abs(trigonometricRelation(triangle) - .0);
+
+                    if (deviation >= TOLERANCE)
+                        throw new Exception($"Deviation too high for triangle number {counter}!");                                           
+                }
+
+                VariousHelpers.SampleToFile(path, triangle);
+            }
+        }
     }
 }

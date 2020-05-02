@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace HyperSimplices.SimplicialGeometry.Simplex
 {
+    [DelimitedRecord(";")]
     public class Triangle
     {
         public double A { get; set; }
@@ -24,7 +25,14 @@ namespace HyperSimplices.SimplicialGeometry.Simplex
         public double Alpha { get; set; }
         public double Beta { get; set; }
         public double Gamma { get; set; }
+        
+        [FieldHidden]
         public double Surface { get; set; }
+
+        public Triangle()
+        {
+
+        }
 
         public Triangle(double a, double b, double c, double alpha, double beta, double gamma)
         {

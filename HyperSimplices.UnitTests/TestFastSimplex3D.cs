@@ -19,7 +19,7 @@ namespace HyperSimplices.UnitTests
 
         public delegate double TrigonometricRelation(Triangle triangle);
 
-        public List<TrigonometricRelation> Relations()
+        public static List<TrigonometricRelation> Relations()
         {
             TrigonometricRelation LawOfCosineI1 = (triangle) => Math.Cosh(triangle.A) - Math.Cosh(triangle.B) * Math.Cosh(triangle.C)
                 + Math.Sinh(triangle.B) * Math.Sinh(triangle.C) * Math.Cos(triangle.Alpha);

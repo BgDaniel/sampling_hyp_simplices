@@ -6,7 +6,7 @@ using MathNet.Numerics.Random;
 using System;
 using System.Collections.Generic;
 
-namespace HyperSimplices.SimplicialGeometry.Triangle
+namespace HyperSimplices.SimplicialGeometry.ShearMapping
 {
     [DelimitedRecord(";")]
     public class ShearTriangle2D
@@ -69,9 +69,14 @@ namespace HyperSimplices.SimplicialGeometry.Triangle
             return .5 * Math.Log((aq * pb) / (ap * qb));
         }
 
-        public static List<ShearTriangle2D> RandomSamples(int nbSamples)
+        public Triangle ToTriangle()
         {
-            var samples = new List<ShearTriangle2D>();
+            return new Triangle(A, B, C, Alpha, Beta, Gamma);
+        }
+
+        public static List<Triangle> RandomSamples(int nbSamples, double maxNorm = .5)
+        {
+            var samples = new List<Triangle>();
             var counter = 0;
             var rnd = new Random();
 
@@ -86,7 +91,7 @@ namespace HyperSimplices.SimplicialGeometry.Triangle
                 {
                     b_x = rnd.NextDouble();
                     b_y = rnd.NextDouble();
-                    B_InDisc = b_x * b_x + b_y * b_y < 1.0;
+                    B_InDisc = b_x * b_x + b_y * b_y < maxNorm;
                 }
 
                 // choose C: (c_x, c_y)                
@@ -98,10 +103,12 @@ namespace HyperSimplices.SimplicialGeometry.Triangle
                 {
                     c_x = rnd.NextDouble();
                     c_y = rnd.NextDouble();
-                    C_InDisc = c_x * c_x + c_y * c_y < 1.0;
+                    C_InDisc = c_x * c_x + c_y * c_y < maxNorm;
                 }
-              
-                samples.Add(new ShearTriangle2D(new double[3] { .0, b_x, b_y }, new double[3] { .0, c_x, c_y }));
+
+                var triangleSheared = new ShearTriangle2D(new double[3] { .0, b_x, b_y }, new double[3] { .0, c_x, c_y });
+
+                samples.Add(triangleSheared.ToTriangle());
                 counter++;
             }
 
