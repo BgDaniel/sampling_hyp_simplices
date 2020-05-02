@@ -3,6 +3,7 @@ using FileHelpers;
 using HyperSimplices;
 using HyperSimplices.SampleGeneration;
 using HyperSimplices.SimplicialGeometry.Simplex;
+using HyperSimplices.SimplicialGeometry.Triangle;
 using HyperSimplices.Utils;
 using HypSimplexSampleFactory.CommandLineParser;
 using System;
@@ -28,6 +29,10 @@ namespace HypSimplexSampleFactory
 
         private static void Execute(Options options)
         {
+            var samples = ShearTriangle2D.RandomSamples(1000);
+
+
+
             Console.WriteLine(MessageAtStart(options));
 
             var randomSimplices = Simplex3D.RandomSamples(options.NumberSamples);
